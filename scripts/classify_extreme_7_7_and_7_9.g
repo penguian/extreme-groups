@@ -70,7 +70,7 @@ for idx7 in [1..Length(d7)] do
   fi;
 od;
 
-Print("\n--- Order 7^9 classification across surviving trunks d7[113], d7[127], d7[141] ---\n");
+Print("\n--- Order 7^9 classification across surviving capable groups d7[113], d7[127], d7[141] ---\n");
 target_f9 := (7^9 + 1) / 8;
 total_7_9 := 0;
 total_ext_7_9 := 0;

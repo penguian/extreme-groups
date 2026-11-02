@@ -1,7 +1,7 @@
 # verify_extreme_7_9.g
 # Self-contained verification of an extreme permutation group of order 7^9.
 # Discovered on 12 October 2026.
-# Group lineage: G(7,5) -> g1 (order 7^6) -> Trunk 15 (order 7^7) -> Child 13 (order 7^8) -> Group 1 (order 7^9).
+# Group lineage: G(7,5) -> g1 (order 7^6) -> d7[15] (order 7^7) -> Child 13 (order 7^8) -> Group 1 (order 7^9).
 # Stabilizer: S = <x4, x2*x3> of order 7^4 = 2401, Core_G(S) = 1.
 # Degree: d = [G:S] = 7^5 = 16807.
 # Extremality: (p+1)*f(G,S) = |G| + 1 <=> 8 * 5044201 = 40353608.

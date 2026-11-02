@@ -1,8 +1,8 @@
 # Extreme Permutation $p$-Groups of Maximal Class: GAP Verification Suite
 
 This repository contains the complete computational verification scripts and libraries for the paper:
-> **Extreme Permutation $p$-Groups of Maximal Class: The 1982 NICE Structure Theorem and a Correction at Order $5^7$**  
-> Paul Leopardi (2026).  
+> **Revisiting extreme $p$-permutation groups of maximal class**  
+> Paul C. Leopardi (2026).  
 > Archival Data: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19067332.svg)](https://doi.org/10.5281/zenodo.19067332)
 
 ---
@@ -11,7 +11,7 @@ This repository contains the complete computational verification scripts and lib
 
 - **GAP**: Version 4.15.1 or newer ([https://www.gap-system.org](https://www.gap-system.org))
 - **ANUPQ Package**: Version 3.3.3 or newer (`LoadPackage("anupq");`)
-- **Python**: Version 3.8+ (for invariant analysis script `iso_summary.py`)
+- **Python**: Version 3.8+ (for `iso_summary.py`, and with `sympy` for `verify_jacobi_witt_factorizations.py`)
 
 All scripts should be executed from the **root directory** of this repository.
 
@@ -30,11 +30,18 @@ extreme-groups/
 │   └── fsz_lib.g                      # Frobenius-Schur indicator computations
 └── scripts/                           # Primary verification drivers
     ├── classify_extreme_5_5_to_5_9.g  # Complete ANUPQ coclass-1 classification for p=5 (orders 5^3..5^9)
-    ├── classify_extreme_7_7_and_7_9.g  # Complete ANUPQ coclass-1 classification for p=7 (orders 7^5..7^9)
+    ├── classify_extreme_7_7_and_7_9.g # Complete ANUPQ coclass-1 classification for p=7 (orders 7^5..7^9)
+    ├── classify_extreme_3_max_class.g # Extreme maximal-class 3-groups: orders 3^3, 3^5 (3 classes) and 3^7 (none)
+    ├── count_max_class_totals.g       # Total maximal-class groups of order p^4..p^7 (all parents) vs published counts; p=5, 7
+    ├── branch_depth_extreme.g         # Coclass-1 branch B_4 and depth audit for p=3, 5, 7 (Prop. 8.11 & Table 4)
+    ├── check_capable_extreme_7_9.g    # Verifies 0 of the 20 capable groups at 7^9 are extreme (terminality of 3,677 classes)
+    ├── verify_witt_pole_anupq.g       # ANUPQ verification of G(11,m) extremality & Witt pole termination of G(p,p) for p=5..17
+    ├── verify_jacobi_witt_factorizations.py # SymPy verification of Vergne-Jacobi & Witt factorizations (Props. 8.6-8.7)
+    ├── verify_extreme_7_9.g           # Independent certificate for order-7^9 extreme group in the rho=2 sector
     ├── verify_consistency_and_case_counts.g # 625 consistent presentations & 42/3/25 case split
-    ├── verify_anupq_completeness.g     # Exhaustive ANUPQ fit of all 70 order-5^7 descendants of E_5
+    ├── verify_anupq_completeness.g    # Exhaustive ANUPQ fit of all 70 order-5^7 descendants of E_5
     ├── verify_E5_stabilisers_normal_form.g  # 125 candidate stabilizers T(k,j,b) of E_5
-    ├── test_Sk_all.g                  # Lemma 6.2 & Theorem 6.3 on order-125 stabilizers
+    ├── test_Sk_all.g                  # Lemma 6.1 & Theorem 6.2 on order-125 stabilizers
     ├── verify_fixed_point_layers.g    # Fixed-point layer distribution across 375 presentations
     ├── verify_cknp_1E_2E_on_extreme_classes.g # CKNP Theorems 1E & 2E on 24 extreme classes
     ├── google_ai_subst_e5.g           # Proof that E_5 is isomorphic to substitution group G(5,5)
@@ -61,8 +68,15 @@ extreme-groups/
 - **Prime $p = 7$ (Orders $7^5, 7^7, 7^9$ — Theorem 7.9 & Table 2):**
   ```bash
   gap -q scripts/classify_extreme_7_7_and_7_9.g
+  gap -q scripts/verify_extreme_7_9.g
   ```
-  *Result:* Classifies all 35 extreme classes of order $7^7$ ($f=102{,}879$) and 3,677 extreme classes of order $7^9$ ($f=5{,}042{,}101$) (runtime: ~3 minutes).
+  *Result:* Classifies all 35 extreme classes of order $7^7$ ($f=102{,}943 = (7^7+1)/8$) and 3,677 extreme classes of order $7^9$ ($f=5{,}044{,}201 = (7^9+1)/8$) (runtime: ~3 minutes).
+
+- **Prime $p = 3$ (Orders $3^3, 3^5, 3^7$):**
+  ```bash
+  gap -q scripts/classify_extreme_3_max_class.g
+  ```
+  *Result:* Extreme maximal-class 3-groups exist at orders $3^3$ (2 classes) and $3^5$ (3 classes, `SmallGroup(243,28..30)`, derived length 2, exponent 9), and none at order $3^7$ (6 maximal-class groups, 0 extreme); by Lemma K0 none exists at any odd order $3^m$, $m\ge 7$ (runtime: seconds).
 
 ### 2. Order $5^7$ Descendants of $E_5$ (Sections 5 & 6, Table 1)
 - **Presentation consistency and case counts:**
@@ -93,3 +107,16 @@ extreme-groups/
   ```bash
   gap -q scripts/google_ai_subst_e5.g
   ```
+
+### 4. Total Maximal-Class Counts, Coclass-1 Branch $\mathcal B_4$ Audit ($p = 3, 5, 7$), and Witt Pole Checks ($p \ge 5$)
+
+```bash
+echo "P_TO_RUN := 5; Read(\"scripts/count_max_class_totals.g\");" | gap -q
+echo "P_TO_RUN := 7; Read(\"scripts/count_max_class_totals.g\");" | gap -q
+gap -q scripts/branch_depth_extreme.g
+gap -q scripts/check_capable_extreme_7_9.g
+gap -q scripts/verify_witt_pole_anupq.g
+python3 scripts/verify_jacobi_witt_factorizations.py
+```
+
+Builds all maximal-class groups of order $p^n$ from all maximal-class parents of order $p^{n-1}$ and compares the totals with published values ($99$ at $5^7$: Newman 1990, O'Brien--Vaughan-Lee 2005; $m(p,n)$ of Lee--Vaughan-Lee for $p=7$), audits the subtree in branch $\mathcal B_4$ of $\mathcal T(p)$ (Proposition 8.11 & Table 4), confirms in ANUPQ that the positive Witt group $G(p,p)$ has $2p^2+3p+3$ immediate maximal-class descendants of order $p^{p+1}$ with $0$ capable for $p\in\{7,11,13,17\}$ (Proposition 8.7(2)), and verifies all graded Lie algebra Jacobi and Witt factorizations symbolically in SymPy.

@@ -16,7 +16,7 @@ namespace ExtremeGroups
 
 /-!
 ## 1. NICE Sieve Sum and Inductive Quotient Equivalence
-(Proposition 4.1(4), Theorem 8.1, and Corollary 4.2)
+(Proposition 3.1(4), Theorem 8.1, and Corollary 3.3)
 
 For an extreme p-group G of order p^(2n+1) with NICE chains H_0 < H_1 < ... < H_n = S
 and G_0 > G_1 > ... > G_n > G_{n+1} = S, the disjoint conjugate layer count is
@@ -50,7 +50,7 @@ theorem niceLayerSum_rec (p : Int) (n : Nat) :
     simp only [niceLayerSum, oddPow] at *
     grind
 
-/-- Proposition 4.1(4) & Theorem 8.1 (Universal NICE sieve extremality identity):
+/-- Proposition 3.1(4) & Theorem 8.1 (Universal NICE sieve extremality identity):
     For all `p : Int` and `n : Nat`, `(p + 1) * niceLayerSum p n = oddPow p n + 1`. -/
 theorem niceLayerSum_extremality (p : Int) (n : Nat) :
     (p + 1) * niceLayerSum p n = oddPow p n + 1 := by
@@ -61,7 +61,7 @@ theorem niceLayerSum_extremality (p : Int) (n : Nat) :
     simp only [niceLayerSum, oddPow] at *
     grind
 
-/-- Corollary 4.2 (Inductive quotient reduction equivalence):
+/-- Corollary 3.3 (Inductive quotient reduction equivalence):
     If `f_top = 1 + p * (p - 1) + p^2 * (f_quot - 1)`, then
     `(p + 1) * f_top - (oddPow p (n + 1) + 1) = p^2 * ((p + 1) * f_quot - (oddPow p n + 1))`.
     Hence `G` of order `p^(2n+3)` satisfies `(p + 1) f(G, S) = |G| + 1` if and only if
@@ -74,7 +74,7 @@ theorem quotient_extremality_step (p f_quot : Int) (n : Nat) :
 
 /-!
 ## 2. Positive Witt Lie Algebra Identities
-(Theorem 8.1 and Proposition 8.7(2))
+(Theorem 8.1 and Proposition 9.2(2))
 
 In the positive Witt Lie algebra `W_+ = ⊕_{r>=1} Q E_r`, the bracket is
 `[E_a, E_b] = (a - b) E_{a+b}` and the degree-+1 derivation is
@@ -101,7 +101,7 @@ theorem witt_jacobi (a b c : Int) :
 
 /-!
 ## 3. Graded Lie Algebra Derivation Recurrence and Obstruction Identities
-(Lemma 8.4, Proposition 8.6, Proposition 8.7, Theorem 8.8, and Theorem 8.10)
+(Lemma 8.5, Theorem 8.7, Proposition 9.1, Proposition 9.2, and Theorem 9.3)
 
 Given any super-diagonal sequence `μ : Nat → Int` (`μ k = c_{k+1, k}` for `k >= 2`,
 with `λ = μ 2`), the derivation identity `c_{a+1, b} + c_{a, b+1} = c_{a, b}` with `c_{b, b} = 0`
@@ -132,10 +132,10 @@ def jacobi (μ : Nat → Int) (a b c : Nat) : Int :=
   cCoeff μ b c * c_bc_a -
   cCoeff μ a c * cCoeff μ (a + c) b
 
-/-- Lemma 8.4 (Triangular recurrence for `d_{2r-2, 2}` for `3 <= r <= 8`):
+/-- Lemma 8.5 (Triangular recurrence for `d_{2r-2, 2}` for `3 <= r <= 8`):
     The leading coefficient of `μ_{r-1}` in `c_{2r-2, 2}` is `(-1)^(r-3) * (r - 2)`,
     namely `+1, -2, +3, -4, +5, -6` for `r = 3, 4, 5, 6, 7, 8`. -/
-theorem lemma_8_4_triangular (μ : Nat → Int) :
+theorem lemma_8_5_triangular (μ : Nat → Int) :
     cCoeff μ 4 2 = μ 2 ∧
     cCoeff μ 6 2 = μ 2 - 2 * μ 3 ∧
     cCoeff μ 8 2 = μ 2 - 4 * μ 3 + 3 * μ 4 ∧
@@ -145,21 +145,21 @@ theorem lemma_8_4_triangular (μ : Nat → Int) :
   simp only [cCoeff, cDiag, Nat.reduceSub, Nat.reduceAdd]
   grind (splits := 0)
 
-/-- Proposition 8.7(1) (Filiform branch induction step):
+/-- Proposition 9.2(1) (Filiform branch induction step):
     If `c_{k-1, 2} = λ`, `c_{k, 2} = λ`, `c_{k, k-1} = 0`, `c_{k+1, k} = μ_k`,
     and `c_{k+2, k-1} = -μ_k`, then `Jac(k, k-1, 2) = 2 * λ * μ_k`. -/
 theorem filiform_induction_step (lam μ_k c_2k1_2 : Int) :
     (0 : Int) * c_2k1_2 + lam * μ_k - lam * (-μ_k) = 2 * lam * μ_k := by
   grind
 
-/-- Weight-9 Jacobi identity (Proposition 8.6 & Theorem 8.9):
+/-- Weight-9 Jacobi identity (Theorem 8.7 & Proposition 9.1):
     `Jac(4, 3, 2) = (2 * μ_2 + μ_3) * μ_4 - 3 * μ_3^2`. -/
 theorem jacobi_4_3_2_identity (μ : Nat → Int) :
     jacobi μ 4 3 2 = (2 * μ 2 + μ 3) * μ 4 - 3 * (μ 3) ^ 2 := by
   simp only [jacobi, cCoeff, cDiag, Nat.reduceSub, Nat.reduceAdd]
   grind (splits := 0)
 
-/-- Theorem 8.9 & Theorem 8.10 (Weight-9 centralizer factorization for `c_{7,2}`):
+/-- Theorem 8.7 (Weight-9 centralizer factorization for `c_{7,2}`):
     `(2 * μ_2 + μ_3) * c_{7,2} - Jac(4, 3, 2) = μ_2 * (2 * μ_2 - 5 * μ_3)`.
     Hence whenever `Jac(4, 3, 2) = 0`, `(2 * λ + μ_3) * c_{7,2} = λ * (2 * λ - 5 * μ_3)`. -/
 theorem weight_9_c72_factorization (μ : Nat → Int) :
@@ -168,7 +168,7 @@ theorem weight_9_c72_factorization (μ : Nat → Int) :
   simp only [jacobi, cCoeff, cDiag, Nat.reduceSub, Nat.reduceAdd]
   grind (splits := 0)
 
-/-- Weight-11 Jacobi elimination identity (Proposition 8.6):
+/-- Weight-11 Jacobi elimination identity (Proposition 9.1):
     Eliminating `μ_4` from `Jac(5, 4, 2)` via `Jac(4, 3, 2) = 0` yields:
     `D^2 * Jac(5, 4, 2) + (D * (μ_5 - 6 * μ_4 + 4 * μ_3) - 18 * μ_3^2) * Jac(4, 3, 2)`
       `= -4 * D * (μ_3^2 - λ^2) * μ_5 + 6 * μ_3^3 * (7 * μ_3 - 4 * λ)`
@@ -183,7 +183,7 @@ theorem jacobi_5_4_2_elimination (μ : Nat → Int) :
   simp only [jacobi, cCoeff, cDiag, Nat.reduceSub, Nat.reduceAdd]
   grind (splits := 0)
 
-/-- Weight-12 Jacobi elimination of `μ_4` from `Jac(5, 4, 3)` (Proposition 8.6):
+/-- Weight-12 Jacobi elimination of `μ_4` from `Jac(5, 4, 3)` (Proposition 9.1):
     `D^2 * Jac(5, 4, 3) - (3 * D * μ_5 - 4 * D * μ_4 - 12 * μ_3^2) * Jac(4, 3, 2)`
       `= 6 * D * μ_3 * (λ + 2 * μ_3) * μ_5 - 36 * μ_3^4`. -/
 theorem jacobi_5_4_3_elimination (μ : Nat → Int) :
@@ -195,7 +195,7 @@ theorem jacobi_5_4_3_elimination (μ : Nat → Int) :
   simp only [jacobi, cCoeff, cDiag, Nat.reduceSub, Nat.reduceAdd]
   grind (splits := 0)
 
-/-- Proposition 8.6 (Universal Weight-12 Vergne-Jacobi Nullstellensatz Certificate):
+/-- Proposition 9.1 (Universal Weight-12 Vergne-Jacobi Nullstellensatz Certificate):
     Over `Z[μ_2, μ_3, μ_4, μ_5]` (and hence over every commutative ring and every prime field `F_p`),
     combining `Jac(4, 3, 2)`, `Jac(5, 4, 2)`, and `Jac(5, 4, 3)` via `W542` and `W543` yields
     identically `36 * μ_3^5 * (λ - 10 * μ_3)`:
@@ -217,10 +217,10 @@ theorem vergne_weight_12_certificate (μ : Nat → Int) :
 
 /-!
 ## 4. Order `p^(p+4)` Cutoff Certificates for `p = 5` (`5^9`) and `p = 7` (`7^11`)
-(Theorem 8.8(3))
+(Theorem 9.3(3))
 -/
 
-/-- Theorem 8.8(3) for `p = 5` (`m = 9`):
+/-- Theorem 9.3(3) for `p = 5` (`m = 9`):
     Combining `c_{6,2} = λ - 2 μ_3 = 0`, `c_{6,3} + λ = λ + μ_3 - μ_4 = 0`, and `Jac(4, 3, 2) = 0`
     gives the exact polynomial identity:
       `Jac(4, 3, 2) + (2 * λ + μ_3) * (c_{6,3} + λ) + (λ - μ_3) * c_{6,2} = 3 * λ^2`. -/
@@ -233,7 +233,7 @@ theorem cutoff_p5_m9_certificate (μ : Nat → Int) :
   simp only [jacobi, cCoeff, cDiag, Nat.reduceSub, Nat.reduceAdd]
   grind (splits := 0)
 
-/-- Theorem 8.8(3) for `p = 7` (`m = 11`, Step 1):
+/-- Theorem 9.3(3) for `p = 7` (`m = 11`, Step 1):
     Combining `Jac(4, 3, 2) = 0` and `c_{8,2} = λ - 4 μ_3 + 3 μ_4 = 0` yields:
       `(2 * λ + μ_3) * c_{8,2} - 3 * Jac(4, 3, 2) = 2 * (λ^2 - μ_3^2) - 7 * μ_3 * (λ - μ_3)`,
     which reduces modulo 7 to `-2 * (μ_3^2 - λ^2) = 0 (mod 7)`, forcing `μ_3 = ±λ`. -/
@@ -244,7 +244,7 @@ theorem cutoff_p7_m11_step1 (μ : Nat → Int) :
   simp only [jacobi, cCoeff, cDiag, Nat.reduceSub, Nat.reduceAdd]
   grind (splits := 0)
 
-/-- Theorem 8.8(3) for `p = 7` (`m = 11`, Step 2):
+/-- Theorem 9.3(3) for `p = 7` (`m = 11`, Step 2):
     Eliminating `μ_5` via `c_{8,3} + λ = λ + μ_3 - 3 * μ_4 + μ_5 = 0` gives:
     - On Branch 1 (`μ_3 = λ, μ_4 = λ`):
       `Jac(5, 4, 2) + (2 * λ - μ_3 - μ_4) * (c_{8,3} + λ) = 2 * λ^2`.
@@ -263,10 +263,10 @@ theorem cutoff_p7_m11_step2_branch2 (μ : Nat → Int) (h3 : μ 3 = -μ 2) (h4 :
   grind (splits := 0)
 
 /-!
-## 5. Proposition 8.7(2) Witt Residue and Theorem 8.10 Order-7^9 Congruence Certificates
+## 5. Proposition 9.2(2) Witt Residue and Theorem 8.7 Order-7^9 Congruence Certificates
 -/
 
-/-- Proposition 8.7(2) (Top-weight Wilson-theorem residue algebraic reduction):
+/-- Proposition 9.2(2) (Top-weight Wilson-theorem residue algebraic reduction):
     In `F_p` (`p >= 11`), where `2 * k = 1` (i.e. `2 * k - 1 = p ≡ 0 (mod p)`),
     clearing denominators in the rational residue formula
       `R_{k,3} = ((k - 3) * (2 * k + 1)) / ((k - 2) * (2 * k - 3) * (2 * k - 5)) * (6 / ((k - 1) * (-1))) * λ^2`
@@ -280,7 +280,7 @@ theorem witt_top_weight_residue_certificate (k lam : Int) (hk : 2 * k = 1) :
       5 * ((2 * k - 4) * (2 * k - 3) * (2 * k - 5) * (2 * k - 2) * (-1)) * lam ^ 2 := by
   grind (splits := 0)
 
-/-- Theorem 8.10 & Table 3 (Order-7^9 structure constants and unique stabilizer congruence):
+/-- Theorem 8.7 & Table 2 (Order-7^9 structure constants and unique stabilizer congruence):
     For the three surviving capable sectors `μ_3 / λ ∈ {4, 3, 2} (mod 7)` at order `7^7` (`λ = 1`),
     `Jac(4, 3, 2) ≡ 0 (mod 7)` uniquely determines `μ_4 / λ ∈ {1, 4, 3} (mod 7)`,
     giving `(c_{7,2}, c_{6,2}, c_{6,3}) ≡ (4, 0, 3), (3, 2, 6), (5, 4, 6) (mod 7)`

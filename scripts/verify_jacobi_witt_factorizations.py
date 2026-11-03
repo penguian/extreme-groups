@@ -3,9 +3,9 @@
 verify_jacobi_witt_factorizations.py
 
 Symbolic verification using SymPy of the Lie-algebraic recurrences,
-Vergne-Jacobi weight-9/11/12 factorizations (Proposition 7.5), and
+Vergne-Jacobi weight-9/11/12 factorizations (Theorem 8.7 & Proposition 9.1), and
 rescaled positive Witt recurrence coefficients and p-adic poles
-(Proposition 7.6 and Theorem 7.8) in:
+(Proposition 9.2 and Theorem 9.4) in:
   "Revisiting extreme p-permutation groups of maximal class"
   by Paul C. Leopardi (2026).
 """
@@ -82,7 +82,7 @@ def main() -> None:
             assert lhs == rhs, f"Mismatch at (a,b)=({a},{b}): {lhs} != {rhs}"
     print("PASS: c_{a+1,b} + c_{a,b+1} == c_{a,b} verified for all 2 <= b < a <= 13.\n")
 
-    print("=== 2. Verification of Proposition 7.5 (Weight-9, 11, 12 Vergne-Jacobi) ===")
+    print("=== 2. Verification of Theorem 8.7 & Proposition 9.1 (Weight-9, 11, 12 Vergne-Jacobi) ===")
     jac_432 = jacobi(4, 3, 2, mu_syms)
     expected_jac_432 = (2 * lam + mu3) * mu4 - 3 * mu3**2
     assert sp.expand(jac_432 - expected_jac_432) == 0
@@ -114,7 +114,7 @@ def main() -> None:
     print(f"Weight 12: Jac(5,4,3) * J_1 * (2*lambda + mu_3)^3 = {sp.factor(vergne_lhs)}")
     print("PASS: Equation (vergne12) verified.\n")
 
-    print("=== 3. Verification of Proposition 7.6 (Witt Branch and Top-Weight Pole) ===")
+    print("=== 3. Verification of Proposition 9.2 (Witt Branch and Top-Weight Pole) ===")
     mu_witt = {k: sp.simplify(witt_c(k + 1, k, lam)) for k in range(2, 20)}
     assert mu_witt[2] == lam and mu_witt[3] == sp.Rational(1, 10) * lam
     for a in range(3, 16):
@@ -163,7 +163,7 @@ def main() -> None:
             f"[R_{{k,3}} mod {p} = {int(R_val.p * pow(int(R_val.q), -1, p)) % p}]"
         )
 
-    print("\n=== 4. Verification of Standard Witt Basis Change & Lemma 8.3 Triangular Recurrence ===")
+    print("\n=== 4. Verification of Standard Witt Basis Change & Lemma 8.5 Triangular Recurrence ===")
     # Check that e_r = 6 * lam * (-1)^r * (r-2)! * E_r in W_+ ([E_a, E_b] = (a-b) E_{a+b}, theta = ad(-E_1))
     # satisfies theta(e_r) = e_{r+1} and [e_a, e_b] = witt_c(a, b, lam) * e_{a+b}.
     for r_val in range(2, 16):
@@ -181,16 +181,16 @@ def main() -> None:
             assert sp.simplify(coeff_ab - witt_c(a_val, b_val, lam)) == 0
     print("PASS: Basis change e_r = 6 * lambda * (r-2)! * E_r in W_+ verified.")
 
-    # Verify Lemma 8.3 degree-0 triangular recurrence d_{2r-2, 2} = sum_{j=0}^{r-3} (-1)^j binom(2r-5-j, j) nu_{2+j}
+    # Verify Lemma 8.5 degree-0 triangular recurrence d_{2r-2, 2} = sum_{j=0}^{r-3} (-1)^j binom(2r-5-j, j) nu_{2+j}
     nu_syms = {i: sp.Symbol(f"nu_{i}") for i in range(2, 20)}
     for r_val in range(3, 15):
         d_2rm2_2 = theta_rec(2 * r_val - 2, 2, nu_syms)
         lead_coeff = sp.diff(d_2rm2_2, nu_syms[r_val - 1])
         expected_lead = (-1) ** (r_val - 3) * (r_val - 2)
         assert lead_coeff == expected_lead, f"Mismatch at r={r_val}: {lead_coeff} != {expected_lead}"
-    print("PASS: Lemma 8.3 triangular leading coefficient (-1)^{r-3}(r-2) verified for 3 <= r <= 14.")
+    print("PASS: Lemma 8.5 triangular leading coefficient (-1)^{r-3}(r-2) verified for 3 <= r <= 14.")
 
-    print("\n=== 5. Direct Modulo-p Verification of Theorem 8.7 (m=p+4) and Theorem 8.8 (m=p+2) ===")
+    print("\n=== 5. Direct Modulo-p Verification of Theorem 9.3 (m=p+4) and Theorem 9.4 (m=p+2) ===")
     primes_p2 = [p for p in sp.primerange(11, 48)]
     for p in primes_p2:
         k_val = (p + 1) // 2
@@ -212,7 +212,7 @@ def main() -> None:
         assert poly_mod_p.degree() == 0 and (poly_mod_p.LC() + 5) % p == 0, f"Failed at p={p}: {poly_mod_p}"
     print(f"PASS: Direct F_p elimination at m=p+2 (Jac(p-3,3,2) == -5*lambda^2 mod p) verified for all primes 11 <= p <= 47 ({primes_p2}).")
 
-    # Direct F_p verification of Theorem 8.8(3) (m=p+4 cutoff with c_{p+1,2}=0 and c_{p+1,3}=-lambda) for 5 <= p <= 47:
+    # Direct F_p verification of Theorem 9.3(3) (m=p+4 cutoff with c_{p+1,2}=0 and c_{p+1,3}=-lambda) for 5 <= p <= 47:
     # (a) p = 5 (m = 9): c_{6,2} = 0, c_{6,3} = -lam, Jac(4,3,2) = 0 over F_5 with lam = 1
     mu_p5 = {2: 1, 3: sp.Symbol("mu_3"), 4: sp.Symbol("mu_4")}
     eqs_p5 = [
@@ -252,7 +252,7 @@ def main() -> None:
         mu_fil = {2: 1, **{j_val: 0 for j_val in range(3, k_max + 1)}}
         c_pp1_2 = int(theta_rec(p + 1, 2, mu_fil)) % p
         assert c_pp1_2 == 1, f"Failed filiform c_{{p+1,2}} at p={p}: {c_pp1_2}"
-    print(f"PASS: Direct F_p elimination at m=p+4 (Theorem 8.8(3)) verified for all primes 5 <= p <= 47 ([5, 7] + {primes_p2}).")
+    print(f"PASS: Direct F_p elimination at m=p+4 (Theorem 9.3(3)) verified for all primes 5 <= p <= 47 ([5, 7] + {primes_p2}).")
     print("PASS: All symbolic identities and p-adic valuations verified.")
 
 

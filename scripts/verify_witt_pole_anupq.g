@@ -1,11 +1,11 @@
 # verify_witt_pole_anupq.g
 #
-# Direct ANUPQ verification of the top-weight p-adic Witt pole (Proposition 8.7(2)
-# and Theorem 8.9(2)) on the Kovacs-Leedham-Green positive Witt groups G(p, p)
+# Direct ANUPQ verification of the top-weight p-adic Witt pole (Proposition 9.2(2)
+# and Theorem 9.4(2)) on the Kovacs-Leedham-Green positive Witt groups G(p, p)
 # for primes p in [5, 7, 11, 13, 17], together with verification that G(11, m)
 # is extreme (f = (11^m + 1) / 12) for all odd m in [3, 5, 7, 9, 11] and that
 # the 13 capable maximal-class groups at 11^7 split into rho = 0 (3 groups,
-# killed by Lemma 8.5), rho = 1 (1 group, killed by Lemma 8.3), and the 9
+# killed by Lemma 8.6), rho = 1 (1 group, killed by Lemma 8.3), and the 9
 # surviving sectors rho in {2..10} mod 11.
 
 LoadPackage("anupq");
@@ -41,7 +41,7 @@ for m in [3, 5, 7, 9, 11] do
 od;
 
 Print("\n====================================================================\n");
-Print("2. ANUPQ TERMINATION OF G(p, p) AT ORDER p^(p+1) (PROPOSITION 8.7(2))\n");
+Print("2. ANUPQ TERMINATION OF G(p, p) AT ORDER p^(p+1) (PROPOSITION 9.2(2))\n");
 Print("====================================================================\n");
 for p in [5, 7, 11, 13, 17] do
   t0 := Runtime();

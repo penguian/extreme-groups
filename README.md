@@ -34,10 +34,10 @@ extreme-groups/
     ├── classify_extreme_7_7_and_7_9.g # Complete ANUPQ coclass-1 classification for p=7 (orders 7^5..7^9)
     ├── classify_extreme_3_max_class.g # Extreme maximal-class 3-groups: orders 3^3, 3^5 (3 classes) and 3^7 (none)
     ├── count_max_class_totals.g       # Total maximal-class groups of order p^4..p^7 (all parents) vs published counts; p=5, 7
-    ├── branch_depth_extreme.g         # Coclass-1 branch B_4 and depth audit for p=3, 5, 7 (Prop. 8.11 & Table 4)
+    ├── branch_depth_extreme.g         # Coclass-1 branch B_4 and depth audit for p=3, 5, 7 (Prop. 8.4 & Table 3)
     ├── check_capable_extreme_7_9.g    # Verifies 0 of the 20 capable groups at 7^9 are extreme (terminality of 3,677 classes)
     ├── verify_witt_pole_anupq.g       # ANUPQ verification of G(11,m) extremality & Witt pole termination of G(p,p) for p=5..17
-    ├── verify_jacobi_witt_factorizations.py # SymPy verification of Vergne-Jacobi & Witt factorizations (Props. 8.6-8.7)
+    ├── verify_jacobi_witt_factorizations.py # SymPy verification of Vergne-Jacobi & Witt factorizations (Props. 9.1-9.2)
     ├── verify_extreme_groups.lean     # Zero-dependency Lean 4.35.0 formal verification of sieve & Lie algebra certificates
     ├── verify_extreme_7_9.g           # Independent certificate for order-7^9 extreme group in the rho=2 sector
     ├── verify_consistency_and_case_counts.g # 625 consistent presentations & 42/3/25 case split
@@ -67,7 +67,7 @@ extreme-groups/
   ```
   *Result:* Confirms 1 class at $5^3$ ($f=21$), 1 capable class at $5^5$ ($E_5 \cong G(5,5)$, $f=521$), exactly 24 extreme classes out of 70 at $5^7$ ($f=13{,}021$), and 0 extreme classes out of 141 at $5^9$ via the universal depth-2 centralizer cutoff $[G_1, \gamma_6(G)] = 1$ (runtime: ~18 seconds).
 
-- **Prime $p = 7$ (Orders $7^5, 7^7, 7^9$ — Theorem 7.9 & Table 2):**
+- **Prime $p = 7$ (Orders $7^5, 7^7, 7^9$ — Theorem 8.7 & Table 2):**
   ```bash
   gap -q scripts/classify_extreme_7_7_and_7_9.g
   gap -q scripts/verify_extreme_7_9.g
@@ -122,4 +122,4 @@ python3 scripts/verify_jacobi_witt_factorizations.py
 lean scripts/verify_extreme_groups.lean
 ```
 
-Builds all maximal-class groups of order $p^n$ from all maximal-class parents of order $p^{n-1}$ and compares the totals with published values ($99$ at $5^7$: Newman 1990, O'Brien--Vaughan-Lee 2005; $m(p,n)$ of Lee--Vaughan-Lee for $p=7$), audits the subtree in branch $\mathcal B_4$ of $\mathcal T(p)$ (Proposition 8.11 & Table 4), confirms in ANUPQ that the positive Witt group $G(p,p)$ has $2p^2+3p+3$ immediate maximal-class descendants of order $p^{p+1}$ with $0$ capable for $p\in\{7,11,13,17\}$ (Proposition 8.7(2)), and verifies all graded Lie algebra Jacobi and Witt factorizations symbolically in SymPy.
+Builds all maximal-class groups of order $p^n$ from all maximal-class parents of order $p^{n-1}$ and compares the totals with published values ($99$ at $5^7$: Newman 1990, O'Brien--Vaughan-Lee 2005; $m(p,n)$ of Lee--Vaughan-Lee for $p=7$), audits the subtree in branch $\mathcal B_4$ of $\mathcal T(p)$ (Proposition 8.4 & Table 3), confirms in ANUPQ that the positive Witt group $G(p,p)$ has $2p^2+3p+3$ immediate maximal-class descendants of order $p^{p+1}$ with $0$ capable for $p\in\{7,11,13,17\}$ (Proposition 9.2(2)), and verifies all graded Lie algebra Jacobi and Witt factorizations symbolically in SymPy.

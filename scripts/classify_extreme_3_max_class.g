@@ -94,7 +94,7 @@ for H in mc7 do
     cent_ok := cent_ok + 1;
   fi;
 od;
-Print("Order 3^7 groups satisfying [P_2, P_2] = 1 and [P_1, P_3] = [P_1, P_4] = 1 (Theorem 8.7): ",
+Print("Order 3^7 groups satisfying [P_2, P_2] = 1 and [P_1, P_3] = [P_1, P_4] = 1 (Theorem 9.3): ",
       cent_ok, " / ", Length(mc7), "\n");
 ext7 := Filtered(mc7, H -> Length(ExtremeStabilizers(H)) > 0);
 Print("Order 3^7: ", Length(ext7), " extreme maximal-class groups\n");

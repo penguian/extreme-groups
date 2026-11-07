@@ -134,3 +134,4 @@ ext5 := Filtered(d5, H -> IsExtremeGen(H, 3));
 Print("3^5: ", Length(d5), " groups, ", Length(ext5), " extreme, of which capable: ",
       Number(ext5, IsMcCapable), "\n");
 Print("====================================================================\n");
+QUIT;

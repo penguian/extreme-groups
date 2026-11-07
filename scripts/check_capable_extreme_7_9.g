@@ -61,3 +61,4 @@ g6 := Cap(G75)[1];
 c7 := Cap(g6);   Print("capable 7^7: ", Length(c7), ", extreme among them: ", Number(c7, H -> IsExtremeGen(H, 7)), "\n");
 c8 := Concatenation(List(c7, Cap));  Print("capable 7^8: ", Length(c8), "\n");
 c9 := Concatenation(List(c8, Cap));  Print("capable 7^9: ", Length(c9), ", extreme among them: ", Number(c9, H -> IsExtremeGen(H, 7)), "\n");
+QUIT;

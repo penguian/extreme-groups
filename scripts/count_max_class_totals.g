@@ -61,3 +61,4 @@ for n in [4..N_MAX] do
   Print(" | ", Runtime()-tn, " ms\n");
 od;
 Print("Total runtime: ", Runtime()-t0, " ms\n");
+QUIT;

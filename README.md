@@ -30,6 +30,7 @@ extreme-groups/
 │   ├── klg_lib.g                      # Matrix PcGroups and UltraFastF counters
 │   └── fsz_lib.g                      # Frobenius-Schur indicator computations
 └── scripts/                           # Primary verification drivers
+    ├── reproduce_all_outputs.sh       # Automated driver generating all 4 .txt tables & 17 .log files
     ├── classify_extreme_5_5_to_5_9.g  # Complete ANUPQ coclass-1 classification for p=5 (orders 5^3..5^9)
     ├── classify_extreme_7_7_and_7_9.g # Complete ANUPQ coclass-1 classification for p=7 (orders 7^5..7^9)
     ├── classify_extreme_3_max_class.g # Extreme maximal-class 3-groups: orders 3^3, 3^5 (3 classes) and 3^7 (none)
@@ -59,6 +60,12 @@ extreme-groups/
 ---
 
 ## Reproduction Guide
+
+### 0. Automated Full Reproduction (All 4 `.txt` Tables and 17 `.log` Files)
+To automatically reproduce the complete archival dataset deposited in Zenodo (`10.5281/zenodo.19067332` — 4 `.txt` tables and 17 `.log` files):
+```bash
+bash scripts/reproduce_all_outputs.sh ../extreme-groups-output
+```
 
 ### 1. Unified Coclass-1 Classifications
 - **Prime $p = 5$ (Orders $5^3, 5^5, 5^7, 5^9$):**

@@ -9,12 +9,22 @@ This repository contains the complete computational verification scripts and lib
 
 ## Prerequisites
 
-- **GAP**: Version 4.15.1 or newer ([https://www.gap-system.org](https://www.gap-system.org))
-- **ANUPQ Package**: Version 3.3.3 or newer (`LoadPackage("anupq");`)
-- **Python**: Version 3.8+ (for `iso_summary.py`, and with `sympy` for `verify_jacobi_witt_factorizations.py`)
-- **Lean 4**: Version 4.35.0 or newer (for `verify_extreme_groups.lean`)
+- **GAP**: Version 4.15.1 or newer ([https://www.gap-system.org](https://www.gap-system.org)), with packages:
+  - **ANUPQ** (`anupq` >= 3.3.3, including its compiled `pq` C binary)
+  - **AutPGrp** (`autpgrp`, required by ANUPQ to compute $p$-group automorphisms and descendants)
+  - **SmallGroups** (`smallgrp`, used for small-order cross-checks)
+  - *Debian/Ubuntu:* `sudo apt install gap gap-anupq gap-autpgrp gap-smallgrp` (or compile `pkg/anupq*` via `./configure && make` in a full GAP installation)
+- **Python**: Version 3.8+ with **SymPy** (`sudo apt install python3-sympy` or `pip install sympy`)
+- **Lean 4**: Version 4.35.0 or newer via [elan](https://github.com/leanprover/elan) (`elan toolchain install leanprover/lean4:v4.35.0`; no `lake` project or `Mathlib` download is required)
 
-All scripts should be executed from the **root directory** of this repository.
+Quick prerequisite check (run from the **root directory** of this repository):
+```bash
+gap -q --quitonbreak -c 'if LoadPackage("anupq") = fail or LoadPackage("autpgrp") = fail or LoadPackage("smallgrp") = fail then Error("Missing GAP package"); fi; QUIT;'
+python3 -c 'import sympy'
+lean --version
+```
+
+All verification scripts should be executed from the **root directory** of this repository.
 
 ---
 

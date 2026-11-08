@@ -99,19 +99,32 @@ theorem consistency_5_7_relations (α1 α2 α3 α4 : Int)
     Under the consistency relation `α_3 + α_4 = 1`, the difference between the proportionality
     defect `(α_6 - k) - 4 * (α_2 + k * α_4)` and `(α_2 + α_6) - k * α_3` is an exact multiple of 5:
       `((α_6 - k) - 4 * (α_2 + k * α_4)) - ((α_2 + α_6) - k * α_3) = -5 * (α_2 + k * (1 - α_3))`. -/
+theorem order_125_criterion_identity_mod (α2 α3 α4 α6 k q : Int) (hcons : α3 + α4 = 5 * q + 1) :
+    ((α6 - k) - 4 * (α2 + k * α4)) - ((α2 + α6) - k * α3) =
+      -5 * (α2 + k * α4 - k * q) := by
+  grind
+
 theorem order_125_criterion_identity (α2 α3 α4 α6 k : Int) (hcons : α3 + α4 = 1) :
     ((α6 - k) - 4 * (α2 + k * α4)) - ((α2 + α6) - k * α3) =
       -5 * (α2 + k * (1 - α3)) := by
   grind
 
 /-- Theorem 6.2 over `F_5`:
-    For every consistent tuple `(α_2, α_3, α_4, α_6)` and `k` in `F_5`,
-    `(α_6 - k) ≡ 4 (α_2 + k α_4) (mod 5)` if and only if `k α_3 ≡ α_2 + α_6 (mod 5)`,
-    and when `α_3 ∈ {2, 3, 4}` there is a unique solution `k_0 ∈ {0, 1, 2, 3, 4}`. -/
-theorem order_125_criterion_mod5 (α2 α3 α4 α6 k : Int) (hcons : α3 + α4 = 1) :
+    For every consistent tuple `(α_2, α_3, α_4, α_6)` satisfying `(α_3 + α_4) % 5 = 1` and `k : Int`,
+    `(α_6 - k) ≡ 4 (α_2 + k α_4) (mod 5)` if and only if `k α_3 ≡ α_2 + α_6 (mod 5)`. -/
+theorem order_125_criterion_mod5 (α2 α3 α4 α6 k : Int) (hcons : (α3 + α4) % 5 = 1) :
     ((α6 - k) - 4 * (α2 + k * α4)) % 5 = 0 ↔ ((α2 + α6) - k * α3) % 5 = 0 := by
-  have hid := order_125_criterion_identity α2 α3 α4 α6 k hcons
+  have hdiv : α3 + α4 = 5 * ((α3 + α4) / 5) + 1 := by omega
+  have hid := order_125_criterion_identity_mod α2 α3 α4 α6 k ((α3 + α4) / 5) hdiv
   omega
+
+/-- Theorem 6.2 uniqueness over `F_5`:
+    When `α_3 ∈ {2, 3, 4}`, there is a unique residue `k_0 ∈ {0, 1, 2, 3, 4}` satisfying
+    `k α_3 ≡ α_2 + α_6 (mod 5)`, given explicitly by `(α_3^3 * (α_2 + α_6)) % 5`. -/
+theorem order_125_unique_k0_mod5 (α2 α3 α6 k : Int)
+    (hα3 : α3 = 2 ∨ α3 = 3 ∨ α3 = 4) (hk : 0 ≤ k ∧ k < 5) :
+    ((α2 + α6) - k * α3) % 5 = 0 ↔ k = (α3 ^ 3 * (α2 + α6)) % 5 := by
+  rcases hα3 with rfl | rfl | rfl <;> omega
 
 /-!
 ## 3. Positive Witt Lie Algebra Identities

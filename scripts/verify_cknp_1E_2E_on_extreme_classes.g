@@ -77,6 +77,9 @@ RunVerifyCKNP := function()
     if not ok then Add(fails, a); fi;
   od;
   Print("failures: ", Length(fails), " ", fails, "\n");
+  if Length(fails) > 0 then
+    Error("CKNP 1E/2E verification failed on ", Length(fails), " extreme class representatives!");
+  fi;
   Print("finished\n");
   if SHOW_TIMINGS then
     Print("Total runtime: ", Runtime() - t_script_start, " ms\n");

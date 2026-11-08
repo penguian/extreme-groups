@@ -155,6 +155,9 @@ RunClassifyExtreme7 := function()
       x1 := Pcgs(G9_1);
       k0_1 := UniqueStabilizerParam79(x1);
       f_val := UltraFastF(G9_1, Subgroup(G9_1, [x1[4], x1[2] * x1[3]^k0_1]));
+      if f_val <> target_f9 then
+        Error("f(d9[1]) = ", f_val, " does not match target_f9 = ", target_f9, "!");
+      fi;
 
       Print("Branch d7[", idx7, "] (mu3=", mu3, ") -> cap8[", c8, "]: ",
             branch_ok, " / ", Length(d9), " extreme | ",

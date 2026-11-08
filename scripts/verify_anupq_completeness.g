@@ -74,8 +74,12 @@ RunVerifyAnupqCompleteness := function()
     Add(which_class, idx);
   od;
 
+  if Length(orbits) = 0 or Length(c6) <> Length(orbits) or
+     Length(which_class) <> Length(orbits) or Set(which_class) <> [1..Length(orbits)] then
+    Error("ANUPQ descendants did not biject onto the 1982 isomorphism classes!");
+  fi;
   Print("Matched classes count: ", Length(which_class), "\n");
-  Print("Unique 1982 isomorphism classes matched: ", Length(Set(which_class)), " of 70\n");
+  Print("Unique 1982 isomorphism classes matched: ", Length(Set(which_class)), " of ", Length(orbits), "\n");
   Print("CONCLUSION: The 1982 parametric family contains EVERY descendant of E_5 of order 5^7 and class 6.\n");
   if SHOW_TIMINGS then
     Print("Total runtime: ", Runtime() - t_script_start, " ms\n");

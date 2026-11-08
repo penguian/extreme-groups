@@ -39,6 +39,9 @@ RunVerifyFixedPointLayers := function()
   Print("presentations: ", Length(alphas), "\n");
   bad := Filtered(alphas, a -> not CheckFixedPointLayersOne(a));
   Print("failures: ", Length(bad), "\n");
+  if Length(bad) > 0 then
+    Error("Fixed-point layer verification failed on ", Length(bad), " presentations!");
+  fi;
   Print("finished\n");
   if SHOW_TIMINGS then
     Print("Total runtime: ", Runtime() - t_script_start, " ms\n");

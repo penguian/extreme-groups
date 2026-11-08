@@ -6,8 +6,9 @@ LoadPackage("anupq");
 Read("lib/klg_lib.g");
 Read("lib/timings_lib.g");
 
-  RunClassifyExtreme5 := function()
-  local t_start, G53, target_f3, d4_all, d4_cap, d5_all, d5_cap, E5, xE5, S5,
+RunClassifyExtreme5 := function()
+  local t_start, G53, G53_25, x53, S53, f53_5, x53_25, S53_25, f53_25, d4_from_25,
+        target_f3, d4_all, d4_cap, d5_all, d5_cap, E5, xE5, S5,
         target_f5, f5_val, d6_all, d6_cap, g6, d7_from_g6, d7, target_f7,
         ext7, non_ext7, idx7, G7, x, is_extreme, best_f, k, S, f_val, cap7,
         current, step, next_level, G, d, H, target_f9, ext9, c72_zero_count,
@@ -21,8 +22,22 @@ Read("lib/timings_lib.g");
 
   # --- Phase 1: Orders 5^3 -> 5^4 -> 5^5 ---
   G53 := ExtraspecialGroup(5^3, 5);
+  G53_25 := ExtraspecialGroup(5^3, 25);
   target_f3 := (5^3 + 1) / 6; # 21
-  Print("Order 5^3: ExtraspecialGroup(5^3, 5) (target f = ", target_f3, ")\n");
+  x53 := Pcgs(G53);
+  S53 := Subgroup(G53, [x53[2]]);
+  f53_5 := UltraFastF(G53, S53);
+  x53_25 := Pcgs(G53_25);
+  S53_25 := Subgroup(G53_25, [x53_25[2]]);
+  f53_25 := UltraFastF(G53_25, S53_25);
+  d4_from_25 := Filtered(PqDescendants(G53_25 : StepSize := 1), H -> NilpotencyClassOfGroup(H) = 3);
+  if Size(Core(G53, S53)) <> 1 or f53_5 <> target_f3
+     or Size(Core(G53_25, S53_25)) <> 1 or f53_25 <> target_f3
+     or Length(d4_from_25) <> 0 then
+    Error("Order 5^3 extraspecial verification failed!");
+  fi;
+  Print("Order 5^3: 2 extreme classes (ExtraspecialGroup(5^3, 5) [exp 5, capable, f = ", f53_5,
+        "] and ExtraspecialGroup(5^3, 25) [exp 25, terminal, f = ", f53_25, "])\n");
 
   d4_all := PqDescendants(G53 : StepSize := 1);
   d4_cap := PqDescendants(G53 : StepSize := 1, CapableDescendants);
@@ -136,7 +151,7 @@ Read("lib/timings_lib.g");
   Print("====================================================================\n");
   Print("CLASSIFICATION SUMMARY ACROSS ALL ORDERS (p = 5)\n");
   Print("====================================================================\n");
-  Print("Order 5^3:  1 extreme class (ExtraspecialGroup(5^3, 5), f = 21)\n");
+  Print("Order 5^3:  2 extreme classes (1 capable: ExtraspecialGroup(5^3, 5); 1 terminal: ExtraspecialGroup(5^3, 25); f = 21)\n");
   Print("Order 5^5:  1 capable extreme class (E_5 =~ G(5,5), f = 521, class 4, dl 2, exp 5)\n");
   Print("Order 5^7: 24 extreme classes out of 70 (f = 13021, class 6, dl 3, exp 25)\n");
   Print("Order 5^9:  0 extreme classes out of 141 (Universal Depth-2 Cutoff)\n");

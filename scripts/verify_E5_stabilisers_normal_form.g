@@ -34,6 +34,9 @@ RunVerifyE5Stabilisers := function()
   od;
   Print("T(k,j,b) tested: ", cnt, "; failures: ", bad, "\n");
   Print("|E5| = ", Size(E5q), ", exponent 5: ", Exponent(E5q) = 5, "\n");
+  if bad > 0 or Size(E5q) <> 3125 or Exponent(E5q) <> 5 then
+    Error("E5 stabilisers normal form verification failed!");
+  fi;
   if SHOW_TIMINGS then
     Print("Total runtime: ", Runtime() - t_script_start, " ms\n");
   fi;

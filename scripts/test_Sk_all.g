@@ -43,6 +43,9 @@ RunTestSkAll := function()
   if Length(mism) > 0 then
     Print(mism{[1..Minimum(5, Length(mism))]}, "\n");
   fi;
+  if bad1 > 0 or bad2 > 0 or bad3 > 0 or Length(mism) > 0 then
+    Error("test_Sk_all verification failed!");
+  fi;
   Print("finished\n");
   if SHOW_TIMINGS then
     Print("Total runtime: ", Runtime() - t_script_start, " ms\n");

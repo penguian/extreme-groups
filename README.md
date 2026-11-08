@@ -80,7 +80,7 @@ SHOW_TIMINGS=1 gap -q scripts/classify_extreme_5_5_to_5_9.g
   ```bash
   gap -q scripts/classify_extreme_5_5_to_5_9.g
   ```
-  *Result:* Confirms 1 class at $5^3$ ($f=21$), 1 capable class at $5^5$ ($E_5 \cong G(5,5)$, $f=521$), exactly 24 extreme classes out of 70 at $5^7$ ($f=13{,}021$), and 0 extreme classes out of 141 at $5^9$ via the universal depth-2 centralizer cutoff $[G_1, \gamma_6(G)] = 1$ (runtime: ~18 seconds).
+  *Result:* Confirms 2 classes at $5^3$ (1 capable, $f=21$), 1 capable class at $5^5$ ($E_5 \cong G(5,5)$, $f=521$), exactly 24 extreme classes out of 70 at $5^7$ ($f=13{,}021$), and 0 extreme classes out of 141 at $5^9$ via the universal depth-2 centralizer cutoff $[G_1, \gamma_6(G)] = 1$ (runtime: ~18 seconds).
 
 - **Prime $p = 7$ (Orders $7^5, 7^7, 7^9$ — Theorem 8.7 & Table 2):**
   ```bash

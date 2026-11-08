@@ -84,7 +84,7 @@ Read("lib/timings_lib.g");
 
   # --- Phase 3: Orders 5^7 -> 5^8 -> 5^9 ---
   # 1. Check capability of the extreme 5^7 branch
-  cap7 := Filtered(d7, d -> Length(PqDescendants(d : StepSize := 1, CapableDescendants)) > 0);
+  cap7 := Filtered(d7, d -> Length(PqDescendants(d : StepSize := 1)) > 0);
   Print("Order 5^7 capable groups from E_5 branch: ", Length(cap7), "\n");
 
   # 2. Complete census of all maximal-class groups of order 5^9

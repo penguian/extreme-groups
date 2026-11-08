@@ -50,15 +50,17 @@ end;
 
 # Construct G(p, m) as a polycyclic group (PcGroup) via its collector on gens[1..m].
 KLGpc := function(p, m)
-  local gens, F, fg, coll, i, j;
+  local gens, F, fg, coll, i, j, nf;
   gens := KLGmats(p, m);
   fg := FreeGroup(m);
   F := GeneratorsOfGroup(fg);
   coll := SingleCollector(fg, List([1..m], i -> p));
   for i in [1..m] do
-    SetPower(coll, i, Product([1..m], k -> F[k]^NormalForm(gens[i]^p, gens, m)[k]));
+    nf := NormalForm(gens[i]^p, gens, m);
+    SetPower(coll, i, Product([1..m], k -> F[k]^nf[k]));
     for j in [i+1..m] do
-      SetConjugate(coll, j, i, Product([1..m], k -> F[k]^NormalForm(gens[j]^gens[i], gens, m)[k]));
+      nf := NormalForm(gens[j]^gens[i], gens, m);
+      SetConjugate(coll, j, i, Product([1..m], k -> F[k]^nf[k]));
     od;
   od;
   return GroupByRwsNC(coll);

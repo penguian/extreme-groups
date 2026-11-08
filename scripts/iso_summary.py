@@ -51,6 +51,7 @@ for c in classes:
                  maxf, ncc, extreme))
 
 print("classes:", len(classes), " invariant violations:", bad)
+assert bad == 0, f"Found {bad} classes with inconsistent presentation invariants"
 print("alpha3 constant on every class:", all(len(r[5]) == 1 for r in rows))
 print("extreme classes:", sum(r[9] for r in rows))
 print("extreme <=> alpha3 in {2,3,4}:", all(r[9] == (r[5][0] in (2, 3, 4)) for r in rows))

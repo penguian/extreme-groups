@@ -63,13 +63,14 @@ extreme-groups/
 ## Reproduction Guide
 
 ### 0. Automated Full Reproduction (All 4 `.txt` Tables and 17 `.log` Files)
-To automatically reproduce the complete archival dataset deposited in Zenodo (`10.5281/zenodo.19067332` — 4 `.txt` tables and 17 `.log` files):
+To automatically reproduce the complete archival dataset deposited in Zenodo (`10.5281/zenodo.19067332` — 4 `.txt` tables and 17 `.log` files) into a new or empty destination directory:
 ```bash
 bash scripts/reproduce_all_outputs.sh ../extreme-groups-output
 ```
+*(For safety, `reproduce_all_outputs.sh` requires the destination directory to be new or empty and refuses to overwrite a non-empty directory.)*
 By default, runtime stamps are omitted so that all 21 output files are 100% deterministic across runs and machines. To include millisecond runtime stamps in `.log` outputs, pass `--timings` (or set `SHOW_TIMINGS=1` / `-c 'SHOW_TIMINGS:=true;'` when invoking individual GAP scripts):
 ```bash
-bash scripts/reproduce_all_outputs.sh --timings ../extreme-groups-output
+bash scripts/reproduce_all_outputs.sh --timings ../extreme-groups-output-timed
 gap -q scripts/classify_extreme_5_5_to_5_9.g --timings
 SHOW_TIMINGS=1 gap -q scripts/classify_extreme_5_5_to_5_9.g
 ```
@@ -136,7 +137,7 @@ python3 scripts/verify_jacobi_witt_factorizations.py
 lean scripts/verify_extreme_groups.lean
 ```
 
-Builds all maximal-class groups of order $p^n$ from all maximal-class parents of order $p^{n-1}$ and compares the totals with published values ($99$ at $5^7$: Newman 1990, O'Brien--Vaughan-Lee 2005; $m(p,n)$ of Lee--Vaughan-Lee for $p=7$), audits the subtree in branch $\mathcal B_4$ of $\mathcal T(p)$ (Proposition 8.4 & Table 3), confirms in ANUPQ that the positive Witt group $G(p,p)$ has $2p^2+3p+3$ immediate maximal-class descendants of order $p^{p+1}$ with $0$ capable for $p\in\{7,11,13,17\}$ (Proposition 9.2(2)), and verifies all graded Lie algebra Jacobi and Witt factorizations symbolically in SymPy.
+Builds all maximal-class groups of order $p^n$ from all maximal-class parents of order $p^{n-1}$ and compares the totals with published values ($99$ at $5^7$: Newman 1990, O'Brien--Vaughan-Lee 2005; $m(p,n)$ of Lee--Vaughan-Lee for $p=7$), audits the subtree in branch $\mathcal B_4$ of $\mathcal T(p)$ (Proposition 8.4 & Table 3), confirms in ANUPQ that the positive Witt group $G(p,p)$ has $2p^2+3p+3$ immediate maximal-class descendants of order $p^{p+1}$ with $0$ capable for $p\in\{7,11,13,17\}$ (Proposition 9.2(2)), verifies all graded Lie algebra Jacobi and Witt factorizations symbolically in SymPy, and machine-checks the sieve, collection, and Nullstellensatz obstruction certificates in Lean 4.
 
 ---
 

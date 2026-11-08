@@ -69,12 +69,12 @@ RunVerifyExtreme79 := function()
   # 5. Normalizer chain (CKNP Theorem 2E)
   G_chain := [ S ];
   cur := S;
-  for i in [1..4] do
+  for i in [1..5] do
     cur := Normalizer(G, cur);
     Add(G_chain, cur);
   od;
   Print("Normalizer chain |G_i|: ", List(G_chain, Size), "\n");
-  Print("Chain indices         : ", List([1..4], i -> Index(G_chain[i+1], G_chain[i])), "\n");
+  Print("Chain indices         : ", List([1..5], i -> Index(G_chain[i+1], G_chain[i])), "\n");
   H_chain := List(G_chain, sub -> Core(sub, S));
   Print("Cores |H_i|           : ", List(H_chain, Size), "\n");
   if SHOW_TIMINGS then

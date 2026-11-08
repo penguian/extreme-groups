@@ -169,15 +169,12 @@ def main() -> None:
         )
 
     print("\n=== 4. Verification of Standard Witt Basis Change & Lemma 8.5 Triangular Recurrence ===")
-    # Check that e_r = 6 * lam * (-1)^r * (r-2)! * E_r in W_+ ([E_a, E_b] = (a-b) E_{a+b}, theta = ad(-E_1))
+    # Check that e_r = 6 * lam * (r-2)! * E_r in W_+ ([E_a, E_b] = (a-b) E_{a+b}, theta(E_r) = [E_r, E_1] = (r-1) E_{r+1})
     # satisfies theta(e_r) = e_{r+1} and [e_a, e_b] = witt_c(a, b, lam) * e_{a+b}.
     for r_val in range(2, 16):
-        # ad(-E_1)(E_r) = -[E_1, E_r] = (r - 1) E_{r+1}
-        ratio_theta = (6 * lam * (-1) ** (r_val + 1) * sp.factorial(r_val - 1)) / (
-            6 * lam * (-1) ** r_val * sp.factorial(r_val - 2) * (r_val - 1)
-        )
-        assert sp.simplify(ratio_theta + 1) == 0 or sp.simplify(ratio_theta - 1) == 0
-    # More precisely, with theta = ad(E_1) where [E_r, E_1] = (r-1) E_{r+1}, setting e_r = 6*lam*(r-2)! E_r:
+        coeff_theta_e_r = 6 * lam * sp.factorial(r_val - 2) * (r_val - 1)
+        coeff_e_r_plus_1 = 6 * lam * sp.factorial(r_val - 1)
+        assert sp.simplify(coeff_theta_e_r - coeff_e_r_plus_1) == 0
     for a_val in range(3, 15):
         for b_val in range(2, a_val):
             coeff_ab = (6 * sp.factorial(a_val - 2)) * (6 * sp.factorial(b_val - 2)) * (a_val - b_val) / (

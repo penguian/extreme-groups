@@ -6,12 +6,12 @@ LoadPackage("anupq");
 Read("lib/klg_lib.g");
 Read("lib/timings_lib.g");
 
-RunClassifyExtreme5 := function()
+  RunClassifyExtreme5 := function()
   local t_start, G53, target_f3, d4_all, d4_cap, d5_all, d5_cap, E5, xE5, S5,
         target_f5, f5_val, d6_all, d6_cap, g6, d7_from_g6, d7, target_f7,
         ext7, non_ext7, idx7, G7, x, is_extreme, best_f, k, S, f_val, cap7,
         current, step, next_level, G, d, H, target_f9, ext9, c72_zero_count,
-        idx9, G9, L, G1, Z9, s2, s1;
+        idx9, G9, L, G1;
 
   t_start := Runtime();
 
@@ -110,35 +110,24 @@ RunClassifyExtreme5 := function()
 
   for idx9 in [1..Length(current)] do
     G9 := current[idx9];
-    x := Pcgs(G9);
     L := LowerCentralSeriesOfGroup(G9);
     G1 := TwoStepCentralizer(G9);
-    Z9 := Subgroup(G9, [x[9]]);
 
-    # Check centralizer condition [G_1, gamma_6(G)] = 1 (Theorem 9.3)
-    if ForAll(GeneratorsOfGroup(G1), g -> Comm(g, x[7]) in Z9) then
+    # Check centralizer condition [G_1, gamma_6(G)] = 1 (Theorem 9.5 / Lemma 8.2).
+    # By Lemma 8.2, if [G_1, gamma_6(G)] = 1 then gamma_7(G) (order 25) centralizes
+    # every core-free subgroup S <= G_1, forcing |N_G(S) : S| >= 25 > 5 and blocking
+    # extremality. If any group had [G_1, gamma_6(G)] <> 1, we exhaustively test all
+    # conjugacy classes of subgroups S <= G_1 of order 625 via SubgroupsSolvableGroup.
+    if Size(CommutatorSubgroup(G1, L[6])) = 1 then
       c72_zero_count := c72_zero_count + 1;
+    else
+      for S in SubgroupsSolvableGroup(G1, rec(size := 625)) do
+        if Size(Core(G9, S)) = 1 and UltraFastF(G9, S) = target_f9 then
+          Add(ext9, idx9);
+          break;
+        fi;
+      od;
     fi;
-
-    # Candidate check for extremality
-    is_extreme := false;
-    for s2 in GeneratorsOfGroup(G1) do
-      if not (s2 in L[2]) then
-        for s1 in GeneratorsOfGroup(L[2]) do
-          if not (s1 in L[3]) then
-            S := Subgroup(G9, [s2, s1]);
-            if Size(S) = 625 and Size(Core(G9, S)) = 1 then
-              if UltraFastF(G9, S) = target_f9 then
-                is_extreme := true;
-                break;
-              fi;
-            fi;
-          fi;
-        od;
-        if is_extreme then break; fi;
-      fi;
-    od;
-    if is_extreme then Add(ext9, idx9); fi;
   od;
 
   Print("Order 5^9 groups with [G_1, gamma_6] = 1 (c_{7,2} = 0): ", c72_zero_count, " / ", Length(current), "\n");

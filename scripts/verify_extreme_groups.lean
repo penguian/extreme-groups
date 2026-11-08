@@ -47,8 +47,7 @@ theorem niceLayerSum_extremality (p : Int) (n : Nat) :
     (p + 1) * niceLayerSum p n = p ^ (2 * n + 1) + 1 := by
   induction n with
   | zero =>
-    simp [niceLayerSum]
-    grind
+    grind [niceLayerSum]
   | succ k ih =>
     rw [niceLayerSum, pow_odd_succ]
     grind
@@ -59,8 +58,7 @@ theorem niceLayerSum_rec (p : Int) (n : Nat) :
     niceLayerSum p (n + 1) = 1 + p * (p - 1) + p ^ 2 * (niceLayerSum p n - 1) := by
   induction n with
   | zero =>
-    simp [niceLayerSum]
-    grind
+    grind [niceLayerSum]
   | succ k ih =>
     simp only [niceLayerSum] at *
     have hpow := pow_odd_succ p k

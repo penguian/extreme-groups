@@ -30,7 +30,18 @@ for arg in "$@"; do
 done
 
 OUTDIR="${OUTDIR_ARG:-$REPO_ROOT/../extreme-groups-output}"
-mkdir -p "$OUTDIR"
+if [ -e "$OUTDIR" ]; then
+  if [ ! -d "$OUTDIR" ]; then
+    echo "Error: Destination '$OUTDIR' exists and is not a directory." >&2
+    exit 1
+  fi
+  if [ -n "$(ls -A "$OUTDIR")" ]; then
+    echo "Error: Destination directory '$OUTDIR' is not empty. Please specify a new or empty directory." >&2
+    exit 1
+  fi
+else
+  mkdir -p "$OUTDIR"
+fi
 OUTDIR="$(cd "$OUTDIR" && pwd)"
 
 # Locate a Python 3 interpreter with SymPy installed
@@ -47,22 +58,29 @@ if [ -z "$PY_SYMPY" ]; then
 fi
 
 echo "Reproducing all 21 archival files into: $OUTDIR"
-rm -f "$OUTDIR"/*.txt "$OUTDIR"/*.log "$OUTDIR"/*.out
 
 # Phase 1: Generate iso_classes.txt and launch parallel long-running GAP jobs
 gap -q scripts/iso_orbits_classify.g < /dev/null &
 PID_ISO=$!
 
+BG_PIDS=()
 for j in 0 1 2 3 4 5; do
   gap -q "scripts/exhaustive_5_7/job${j}.g" < /dev/null &
+  BG_PIDS+=("$!")
 done
 
 gap -q scripts/classify_extreme_7_7_and_7_9.g < /dev/null > "$OUTDIR/classify_extreme_7_7_and_7_9.log" &
+BG_PIDS+=("$!")
 gap -q scripts/branch_depth_extreme.g < /dev/null > "$OUTDIR/branch_depth_extreme.log" &
+BG_PIDS+=("$!")
 gap -q scripts/classify_extreme_5_5_to_5_9.g < /dev/null > "$OUTDIR/classify_extreme_5_5_to_5_9.log" &
+BG_PIDS+=("$!")
 gap -q scripts/verify_extreme_7_9.g < /dev/null > "$OUTDIR/verify_extreme_7_9.log" &
+BG_PIDS+=("$!")
 gap -q scripts/check_capable_extreme_7_9.g < /dev/null > "$OUTDIR/check_capable_extreme_7_9.log" &
+BG_PIDS+=("$!")
 gap -q scripts/verify_witt_pole_anupq.g < /dev/null > "$OUTDIR/verify_witt_pole_anupq.log" &
+BG_PIDS+=("$!")
 
 # Wait for iso_classes.txt before running scripts that read it
 wait "$PID_ISO"
@@ -91,8 +109,10 @@ if [ -n "$LEAN_BIN" ]; then
   "$LEAN_BIN" scripts/verify_extreme_groups.lean
 fi
 
-# Wait for all parallel background jobs (including job0..job5) to finish
-wait
+# Wait for each parallel background job explicitly so set -e catches any non-zero exit
+for pid in "${BG_PIDS[@]}"; do
+  wait "$pid"
+done
 
 cat scripts/exhaustive_5_7/out0.txt \
     scripts/exhaustive_5_7/out1.txt \

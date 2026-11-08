@@ -3,7 +3,7 @@
 
   Self-contained, zero-dependency Lean 4 (v4.35.0+) machine-checked formalization
   of the algebraic, combinatorial, and graded Lie algebra theorems in:
-    "Revisiting extreme p-permutation groups of maximal class"
+    "Revisiting extreme transitive p-groups of maximal class"
     Paul C. Leopardi (2026)
 
   Run from the repository root with:

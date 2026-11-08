@@ -1,7 +1,7 @@
-# Extreme Permutation $p$-Groups of Maximal Class: GAP Verification Suite
+# Extreme Transitive $p$-Groups of Maximal Class: GAP Verification Suite
 
 This repository contains the complete computational verification scripts and libraries for the paper:
-> **Revisiting extreme $p$-permutation groups of maximal class**  
+> **Revisiting extreme transitive $p$-groups of maximal class**  
 > Paul C. Leopardi (2026).  
 > Archival Data: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19067332.svg)](https://doi.org/10.5281/zenodo.19067332)
 
@@ -22,6 +22,7 @@ All scripts should be executed from the **root directory** of this repository.
 
 ```text
 extreme-groups/
+├── LICENSE                            # MIT License
 ├── README.md                          # This document
 ├── lib/                               # Core mathematical libraries
 │   ├── alpha_lib.g                    # 1982 family presentation generators (DescGroup, ConsistentAlphas)
@@ -136,3 +137,10 @@ lean scripts/verify_extreme_groups.lean
 ```
 
 Builds all maximal-class groups of order $p^n$ from all maximal-class parents of order $p^{n-1}$ and compares the totals with published values ($99$ at $5^7$: Newman 1990, O'Brien--Vaughan-Lee 2005; $m(p,n)$ of Lee--Vaughan-Lee for $p=7$), audits the subtree in branch $\mathcal B_4$ of $\mathcal T(p)$ (Proposition 8.4 & Table 3), confirms in ANUPQ that the positive Witt group $G(p,p)$ has $2p^2+3p+3$ immediate maximal-class descendants of order $p^{p+1}$ with $0$ capable for $p\in\{7,11,13,17\}$ (Proposition 9.2(2)), and verifies all graded Lie algebra Jacobi and Witt factorizations symbolically in SymPy.
+
+---
+
+## License
+
+This repository is distributed under the [MIT License](LICENSE).
+

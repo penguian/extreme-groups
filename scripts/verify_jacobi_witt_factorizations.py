@@ -6,7 +6,7 @@ Symbolic verification using SymPy of the Lie-algebraic recurrences,
 Vergne-Jacobi weight-9/11/12 factorizations (Theorem 8.7 & Proposition 9.1), and
 rescaled positive Witt recurrence coefficients and p-adic poles
 (Proposition 9.2 and Theorem 9.4) in:
-  "Revisiting extreme p-permutation groups of maximal class"
+  "Revisiting extreme transitive p-groups of maximal class"
   by Paul C. Leopardi (2026).
 """
 

@@ -10,6 +10,9 @@ rescaled positive Witt recurrence coefficients and p-adic poles
   by Paul C. Leopardi (2026).
 """
 
+import os
+import sys
+import time
 import sympy as sp
 
 
@@ -67,6 +70,8 @@ def p_adic_valuation(q: sp.Rational, p: int) -> int:
 
 
 def main() -> None:
+    t_start = time.perf_counter()
+    show_timings = "--timings" in sys.argv[1:] or os.environ.get("SHOW_TIMINGS", "") in ("1", "true", "TRUE")
     lam, mu3, mu4, mu5 = sp.symbols("lambda mu_3 mu_4 mu_5")
     mu_syms = {i: sp.Symbol(f"mu_{i}") for i in range(2, 20)}
     mu_syms[2] = lam
@@ -254,6 +259,8 @@ def main() -> None:
         assert c_pp1_2 == 1, f"Failed filiform c_{{p+1,2}} at p={p}: {c_pp1_2}"
     print(f"PASS: Direct F_p elimination at m=p+4 (Theorem 9.3(3)) verified for all primes 5 <= p <= 47 ([5, 7] + {primes_p2}).")
     print("PASS: All symbolic identities and p-adic valuations verified.")
+    if show_timings:
+        print(f"Total runtime: {int(round((time.perf_counter() - t_start) * 1000))} ms")
 
 
 if __name__ == "__main__":

@@ -27,8 +27,8 @@ extreme-groups/
 │   ├── alpha_lib.g                    # 1982 family presentation generators (DescGroup, ConsistentAlphas)
 │   ├── iso_orbits_lib.g               # Automorphism group & orbit partition algorithms
 │   ├── google_ai_subst_lib.g          # Polynomial substitution group calculations
-│   ├── klg_lib.g                      # Matrix PcGroups and UltraFastF counters
-│   └── fsz_lib.g                      # Frobenius-Schur indicator computations
+│   ├── klg_lib.g                      # Matrix PcGroups, TwoStepCentralizer, and UltraFastF counters
+│   └── timings_lib.g                  # Optional runtime reporting (--timings / SHOW_TIMINGS)
 └── scripts/                           # Primary verification drivers
     ├── reproduce_all_outputs.sh       # Automated driver generating all 4 .txt tables & 17 .log files
     ├── classify_extreme_5_5_to_5_9.g  # Complete ANUPQ coclass-1 classification for p=5 (orders 5^3..5^9)
@@ -65,6 +65,12 @@ extreme-groups/
 To automatically reproduce the complete archival dataset deposited in Zenodo (`10.5281/zenodo.19067332` — 4 `.txt` tables and 17 `.log` files):
 ```bash
 bash scripts/reproduce_all_outputs.sh ../extreme-groups-output
+```
+By default, runtime stamps are omitted so that all 21 output files are 100% deterministic across runs and machines. To include millisecond runtime stamps in `.log` outputs, pass `--timings` (or set `SHOW_TIMINGS=1` / `-c 'SHOW_TIMINGS:=true;'` when invoking individual GAP scripts):
+```bash
+bash scripts/reproduce_all_outputs.sh --timings ../extreme-groups-output
+gap -q scripts/classify_extreme_5_5_to_5_9.g --timings
+SHOW_TIMINGS=1 gap -q scripts/classify_extreme_5_5_to_5_9.g
 ```
 
 ### 1. Unified Coclass-1 Classifications

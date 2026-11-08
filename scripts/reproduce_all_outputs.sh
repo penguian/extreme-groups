@@ -3,7 +3,9 @@
 # deposited in Zenodo record 10.5281/zenodo.19067332.
 #
 # Usage (from repository root):
-#   bash scripts/reproduce_all_outputs.sh [OUTPUT_DIR]
+#   bash scripts/reproduce_all_outputs.sh [--timings] [OUTPUT_DIR]
+# Default: deterministic archival logs without runtime stamps.
+# Pass --timings (or export SHOW_TIMINGS=1) to include millisecond runtime stamps.
 # Default OUTPUT_DIR: ../extreme-groups-output
 
 set -euo pipefail
@@ -11,7 +13,23 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
-OUTDIR="${1:-$REPO_ROOT/../extreme-groups-output}"
+export SHOW_TIMINGS="${SHOW_TIMINGS:-0}"
+OUTDIR_ARG=""
+for arg in "$@"; do
+  case "$arg" in
+    --timings)
+      export SHOW_TIMINGS=1
+      ;;
+    --no-timings)
+      export SHOW_TIMINGS=0
+      ;;
+    *)
+      OUTDIR_ARG="$arg"
+      ;;
+  esac
+done
+
+OUTDIR="${OUTDIR_ARG:-$REPO_ROOT/../extreme-groups-output}"
 mkdir -p "$OUTDIR"
 OUTDIR="$(cd "$OUTDIR" && pwd)"
 
@@ -63,6 +81,15 @@ gap -q scripts/classify_extreme_3_max_class.g < /dev/null > "$OUTDIR/classify_ex
 echo 'P_TO_RUN := 5; Read("scripts/count_max_class_totals.g");' | gap -q > "$OUTDIR/count_max_class_totals_p5.log"
 echo 'P_TO_RUN := 7; Read("scripts/count_max_class_totals.g");' | gap -q > "$OUTDIR/count_max_class_totals_p7.log"
 "$PY_SYMPY" scripts/verify_jacobi_witt_factorizations.py > "$OUTDIR/verify_jacobi_witt_factorizations.log"
+
+# Run Lean 4 formal verification check if Lean 4 is installed
+LEAN_BIN="$(command -v lean 2>/dev/null || true)"
+if [ -z "$LEAN_BIN" ] && [ -x "$HOME/.elan/bin/lean" ]; then
+  LEAN_BIN="$HOME/.elan/bin/lean"
+fi
+if [ -n "$LEAN_BIN" ]; then
+  "$LEAN_BIN" scripts/verify_extreme_groups.lean
+fi
 
 # Wait for all parallel background jobs (including job0..job5) to finish
 wait

@@ -422,6 +422,39 @@ theorem cutoff_p7_m11_step2_branch2 (μ : Nat → Int) (h3 : μ 3 = -μ 2) (h4 :
   simp only [jacobi, cCoeff, cDiag, Nat.reduceSub, Nat.reduceAdd]
   grind (splits := 0)
 
+/-- Eliminated weight-9 polynomial `P_1 = (2 * λ + μ_3) * c_{8,2} - 3 * Jac(4, 3, 2)` for `p = 7, m = 11`. -/
+@[simp] def cutoffP7P1 (μ : Nat → Int) : Int :=
+  (2 * μ 2 + μ 3) * cCoeff μ 8 2 - 3 * jacobi μ 4 3 2
+
+/-- Eliminated weight-11 polynomial `Q_2 = 3 * (Jac(5, 4, 2) - (2 * λ - μ_3 - μ_4) * (c_{8,3} + λ)) - (6 * λ - 2 * μ_3 + 3 * μ_4) * c_{8,2}`
+    for `p = 7, m = 11`. -/
+@[simp] def cutoffP7Q2 (μ : Nat → Int) : Int :=
+  3 * (jacobi μ 5 4 2 - (2 * μ 2 - μ 3 - μ 4) * (cCoeff μ 8 3 + μ 2)) -
+    (6 * μ 2 - 2 * μ 3 + 3 * μ 4) * cCoeff μ 8 2
+
+/-- Theorem 9.3(3) for `p = 7` (`m = 11`, Universal Nullstellensatz Certificate):
+    Over `Z[μ_2, μ_3, μ_4, μ_5]`, combining `Jac(4, 3, 2)`, `Jac(5, 4, 2)`, `c_{8,2}`, and `c_{8,3} + λ`
+    via `cutoffP7P1` and `cutoffP7Q2` yields identically `54 * λ^3` (`54 ≡ 5 ≠ 0 (mod 7)`):
+      `(40 * μ_3 - 159 * λ) * P_1 + (40 * μ_3 - 31 * λ) * Q_2 = 54 * λ^3`. -/
+theorem cutoff_p7_m11_certificate (μ : Nat → Int) :
+    (40 * μ 3 - 159 * μ 2) * cutoffP7P1 μ +
+      (40 * μ 3 - 31 * μ 2) * cutoffP7Q2 μ =
+      54 * (μ 2) ^ 3 := by
+  simp only [cutoffP7P1, cutoffP7Q2, jacobi, cCoeff, cDiag, Nat.reduceSub, Nat.reduceAdd]
+  grind (splits := 0)
+
+/-- Theorem 9.3(3) for `p = 7` (`m = 11`, Unconditional Vanishing Implication Form):
+    Whenever `Jac(4, 3, 2) = 0`, `Jac(5, 4, 2) = 0`, `c_{8,2} = 0`, and `c_{8,3} = -λ`,
+    we have `54 * λ^3 = 0` (and hence `λ ≡ 0 (mod 7)` since `gcd(54, 7) = 1`). -/
+theorem cutoff_p7_m11_vanishing (μ : Nat → Int)
+    (h432 : jacobi μ 4 3 2 = 0) (h542 : jacobi μ 5 4 2 = 0)
+    (hc82 : cCoeff μ 8 2 = 0) (hc83 : cCoeff μ 8 3 = -μ 2) :
+    54 * (μ 2) ^ 3 = 0 := by
+  rw [← cutoff_p7_m11_certificate μ]
+  unfold cutoffP7P1 cutoffP7Q2
+  rw [h432, h542, hc82, hc83]
+  omega
+
 /-!
 ## 6. Proposition 9.2(2) Witt Residue and Theorem 8.7 Order-7^9 Congruence Certificates
 -/
@@ -487,5 +520,25 @@ theorem order_7_9_congruence_invertible :
     rw [h]
     omega
   · unfold validSurvivingSector7; decide
+
+/-- Theorem 8.7 (Equation (9), Order-2401 proportionality identity at order `7^9`):
+    In `V = <x_8, x_9> ≅ F_7^2`, the 2×2 determinant between the exponent vector `(6, α_6 - k)`
+    of `w_1(k) = (x_2 x_3^k)^7` and `(c_{6,2}, β + α_2 c_{7,2} + k (c_{6,3} + μ_3 c_{7,2}))`
+    of `w_2(k) = [[x_4, x_2 x_3^k], x_2 x_3^k]` differs from the linear congruence defect
+    `(c_{6,2} - c_{6,3} - μ_3 c_{7,2}) k - (c_{6,2} α_6 + β + α_2 c_{7,2})` by an exact multiple of 7. -/
+theorem order_2401_criterion_identity (α2 α6 β μ3 c62 c63 c72 k : Int) :
+    (6 * (β + α2 * c72 + k * (c63 + μ3 * c72)) - c62 * (α6 - k)) -
+      ((c62 - c63 - μ3 * c72) * k - (c62 * α6 + β + α2 * c72)) =
+      7 * (β + α2 * c72 + k * (c63 + μ3 * c72)) := by
+  grind
+
+/-- Theorem 8.7 (Equation (9) modulo 7):
+    `w_1(k)` and `w_2(k)` are proportional in `V = <x_8, x_9>` if and only if
+    `(c_{6,2} - c_{6,3} - μ_3 c_{7,2}) k ≡ c_{6,2} α_6 + β + α_2 c_{7,2} (mod 7)`. -/
+theorem order_2401_criterion_mod7 (α2 α6 β μ3 c62 c63 c72 k : Int) :
+    (6 * (β + α2 * c72 + k * (c63 + μ3 * c72)) - c62 * (α6 - k)) % 7 = 0 ↔
+      ((c62 - c63 - μ3 * c72) * k - (c62 * α6 + β + α2 * c72)) % 7 = 0 := by
+  have hid := order_2401_criterion_identity α2 α6 β μ3 c62 c63 c72 k
+  omega
 
 end ExtremeGroups

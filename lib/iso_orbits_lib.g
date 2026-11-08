@@ -49,15 +49,12 @@ end;
 
 # Orbit of alpha within the family, and |Aut(G_alpha)|.
 OrbitAndAut := function(a)
-  local G, pcgs, x, L, G1, g2, reps, y2s, orb, aut, r, y2, b, cnt, cs;
+  local G, pcgs, x, L, G1, g2, y2s, orb, aut, r, y2, b, cnt, cs;
   G := DescGroup(a);
   pcgs := Pcgs(G); x := pcgs;
   L := LowerCentralSeriesOfGroup(G);
-  # C_G(gamma2/gamma4): elements g with [gamma2, g] <= gamma4
-  G1 := Filtered(MaximalSubgroups(G), M -> ForAll(GeneratorsOfGroup(L[2]),
-            h -> ForAll(GeneratorsOfGroup(M), g -> Comm(h, g) in L[4])));
-  if Length(G1) <> 1 then Error("G1 not unique for ", a); fi;
-  G1 := G1[1];
+  G1 := TwoStepCentralizer(G);
+  if Index(G, G1) <> 5 then Error("G1 does not have index 5 for ", a); fi;
   if x[1] in G1 or not x[2] in G1 then Error("x1/x2 not positioned as expected for ", a); fi;
   g2 := L[2];
   cs := Filtered(ConjugacyClasses(G), C -> not Representative(C) in G1);

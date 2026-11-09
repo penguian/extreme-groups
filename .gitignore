@@ -1,0 +1,24 @@
+# Temporary GAP / batch outputs
+*.log
+*.out
+scripts/exhaustive_5_7/out*.txt
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Lean 4 build artifacts
+*.olean
+*.ilean
+*.trace
+.lake/
+
+# Editor / OS backups and local environment files
+*~
+*.swp
+*.swo
+.DS_Store
+.env
+.env.*
+*.pem
+*.key

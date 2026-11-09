@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Reproduce all 21 archival output files (4 .txt tables and 17 .log files)
-# deposited in Zenodo record 10.5281/zenodo.19067332.
+# deposited in Zenodo record 10.5281/zenodo.24083345.
 #
 # Usage (from repository root):
 #   bash scripts/reproduce_all_outputs.sh [--timings] [OUTPUT_DIR]

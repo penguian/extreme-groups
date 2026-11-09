@@ -3,7 +3,7 @@
 This repository contains the complete computational verification scripts and libraries for the paper:
 > **Revisiting extreme transitive $p$-groups of maximal class**  
 > Paul C. Leopardi (2026).  
-> Archival Data: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19067332.svg)](https://doi.org/10.5281/zenodo.19067332)
+> Archival Data: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24083345.svg)](https://doi.org/10.5281/zenodo.24083345)
 
 ---
 
@@ -73,7 +73,7 @@ extreme-groups/
 ## Reproduction Guide
 
 ### 0. Automated Full Reproduction (All 4 `.txt` Tables and 17 `.log` Files)
-To automatically reproduce the complete archival dataset deposited in Zenodo (`10.5281/zenodo.19067332` — 4 `.txt` tables and 17 `.log` files) into a new or empty destination directory:
+To automatically reproduce the complete archival dataset deposited in Zenodo (`10.5281/zenodo.24083345` — 4 `.txt` tables and 17 `.log` files) into a new or empty destination directory:
 ```bash
 bash scripts/reproduce_all_outputs.sh ../extreme-groups-output
 ```

@@ -532,7 +532,7 @@ theorem order_7_9_congruence_invertible :
     omega
   · unfold validSurvivingSector7; decide
 
-/-- Theorem 8.7 (Equation (9), Order-2401 proportionality identity at order `7^9`):
+/-- Theorem 8.7 (Equation (10), Order-2401 proportionality identity at order `7^9`):
     In `V = <x_8, x_9> ≅ F_7^2`, the 2×2 determinant between the exponent vector `(6, α_6 - k)`
     of `w_1(k) = (x_2 x_3^k)^7` and `(c_{6,2}, β + α_2 c_{7,2} + k (c_{6,3} + μ_3 c_{7,2}))`
     of `w_2(k) = [[x_4, x_2 x_3^k], x_2 x_3^k]` differs from the linear congruence defect
@@ -543,7 +543,7 @@ theorem order_2401_criterion_identity (α2 α6 β μ3 c62 c63 c72 k : Int) :
       7 * (β + α2 * c72 + k * (c63 + μ3 * c72)) := by
   grind
 
-/-- Theorem 8.7 (Equation (9) modulo 7):
+/-- Theorem 8.7 (Equation (10) modulo 7):
     `w_1(k)` and `w_2(k)` are proportional in `V = <x_8, x_9>` if and only if
     `(c_{6,2} - c_{6,3} - μ_3 c_{7,2}) k ≡ c_{6,2} α_6 + β + α_2 c_{7,2} (mod 7)`. -/
 theorem order_2401_criterion_mod7 (α2 α6 β μ3 c62 c63 c72 k : Int) :
@@ -552,4 +552,178 @@ theorem order_2401_criterion_mod7 (α2 α6 β μ3 c62 c63 c72 k : Int) :
   have hid := order_2401_criterion_identity α2 α6 β μ3 c62 c63 c72 k
   omega
 
+/-!
+## 7. Supplementary Prose, Sieve, and Axiom-Footprint Audit
+
+Formal proofs of auxiliary arithmetic, combinatorial, and exponent-sum identities
+across Sections 1–8 of the paper, followed by `#print axioms` checks on all 43
+theorems in this file to certify zero `sorryAx` and zero non-standard axioms.
+-/
+
+/-- Section 1: Affine chain-ring groups of order `p^(2n-1)` and nilpotency class `n`
+    have maximal class `(2n - 1) - 1 = 2n - 2` (for `n ≥ 1`) if and only if `n = 2`. -/
+theorem affine_maximal_class_iff_n_eq_2 (n : Nat) (hn : 1 ≤ n) :
+    2 * n - 2 = n ↔ n = 2 := by
+  omega
+
+/-- Section 2 (Definition 2.2 & equivalence with 1982 strict inequality):
+    Under the CKNP bound `(p + 1) * f ≤ G + 1`, strict inequality `(p + 1) * f > G`
+    is equivalent over `Int` to exact equality `(p + 1) * f = G + 1`, and then
+    `(p + 1) * (G - f) = p * G - 1`. -/
+theorem extreme_strict_ineq_iff_eq (p f G : Int) (hbound : (p + 1) * f ≤ G + 1) :
+    ((p + 1) * f > G ↔ (p + 1) * f = G + 1) ∧
+    ((p + 1) * f = G + 1 → (p + 1) * (G - f) = p * G - 1) := by
+  refine ⟨by omega, ?_⟩
+  intro heq
+  grind
+
+/-- Proposition 3.1 (Proof, block size identity):
+    `p + sum_{i=1}^{m} (p - 1) * p^i = p ^ (m + 1)` for all `p : Int` and `m : Nat`. -/
+@[simp] def orbitPrefixSum (p : Int) : Nat → Int
+  | 0     => p
+  | m + 1 => orbitPrefixSum p m + (p - 1) * p ^ (m + 1)
+
+theorem prop_3_1_block_size (p : Int) (m : Nat) :
+    orbitPrefixSum p m = p ^ (m + 1) := by
+  induction m with
+  | zero => simp [orbitPrefixSum, Int.pow_succ]
+  | succ k ih =>
+    rw [orbitPrefixSum, ih, Int.pow_succ, Int.pow_succ]
+    grind
+
+/-- Theorem 2.4(d) Footnote 1:
+    Summing `1 + p + p^2 + ... + p^(n-1)` satisfies `(p - 1) * geomSum p n = p^n - 1`. -/
+@[simp] def geomSum (p : Int) : Nat → Int
+  | 0     => 0
+  | k + 1 => geomSum p k + p ^ k
+
+theorem thm_2E_d_transversal_count (p : Int) (n : Nat) :
+    (p - 1) * geomSum p n = p ^ n - 1 := by
+  induction n with
+  | zero => simp [geomSum]
+  | succ k ih =>
+    rw [geomSum, Int.pow_succ]
+    grind
+
+theorem pow_pos_of_ge_two {p : Int} (hp : 2 ≤ p) (a : Nat) : 1 ≤ p ^ a := by
+  induction a with
+  | zero => simp
+  | succ k ih =>
+    rw [Int.pow_succ]
+    have : 1 * 2 ≤ p ^ k * p := Int.mul_le_mul ih hp (by omega) (by omega)
+    omega
+
+theorem pow_strict_mono_of_ge_two {p : Int} (hp : 2 ≤ p) {a b : Nat} (hab : a < b) :
+    p ^ a < p ^ b := by
+  induction hab with
+  | refl =>
+    rw [Int.pow_succ]
+    have hpos := pow_pos_of_ge_two hp a
+    have hmul : p ^ a * 2 ≤ p ^ a * p := Int.mul_le_mul (Int.le_refl _) hp (by omega) (by omega)
+    omega
+  | step _ ih =>
+    rename_i m _
+    rw [Int.pow_succ]
+    have hpos := pow_pos_of_ge_two hp m
+    have hmul : p ^ m * 2 ≤ p ^ m * p := Int.mul_le_mul (Int.le_refl _) hp (by omega) (by omega)
+    omega
+
+theorem pow_le_mono_of_ge_two {p : Int} (hp : 2 ≤ p) {a b : Nat} (hab : a ≤ b) :
+    p ^ a ≤ p ^ b := by
+  rcases Nat.eq_or_lt_of_le hab with rfl | hlt
+  · exact Int.le_refl _
+  · exact Int.le_of_lt (pow_strict_mono_of_ge_two hp hlt)
+
+/-- Remark 3.4: Each layer deficit summand `(p^k - p^j) * (p^k - p^(k-1))` with `p ≥ 2`,
+    `1 ≤ k`, and `j ≤ k` is `≥ 0`, and equals `0` if and only if `j = k`. -/
+theorem layer_deficit_term_nonneg_and_zero_iff {p : Int} (hp : 2 ≤ p)
+    {j k : Nat} (hk : 1 ≤ k) (hjk : j ≤ k) :
+    0 ≤ (p ^ k - p ^ j) * (p ^ k - p ^ (k - 1)) ∧
+    ((p ^ k - p ^ j) * (p ^ k - p ^ (k - 1)) = 0 ↔ j = k) := by
+  have hk_gt : p ^ (k - 1) < p ^ k := pow_strict_mono_of_ge_two hp (by omega)
+  have hjk_le : p ^ j ≤ p ^ k := pow_le_mono_of_ge_two hp hjk
+  constructor
+  · exact Int.mul_nonneg (by omega) (by omega)
+  · constructor
+    · intro hzero
+      rcases Nat.eq_or_lt_of_le hjk with rfl | hlt
+      · rfl
+      · have hj_lt : p ^ j < p ^ k := pow_strict_mono_of_ge_two hp hlt
+        have hpos : 0 < (p ^ k - p ^ j) * (p ^ k - p ^ (k - 1)) :=
+          Int.mul_pos (by omega) (by omega)
+        omega
+    · intro rfl
+      simp
+
+/-- Section 3, Section 4, Section 5 Case 3, and Section 8 numerical sieve evaluations: -/
+theorem concrete_sieve_counts :
+    niceLayerSum 5 2 = 521 ∧
+    niceLayerSum 5 3 = 13021 ∧
+    5 ^ 7 - niceLayerSum 5 3 = 65104 ∧
+    (5 * 5 ^ 7 - 1) / 6 = 65104 ∧
+    (25 - 5) * (25 - 5) = 400 ∧
+    13021 - 400 = 12621 ∧
+    niceLayerSum 7 3 = 102943 ∧
+    niceLayerSum 7 4 = 5044201 ∧
+    niceLayerSum 11 1 = 111 ∧
+    niceLayerSum 11 2 = 13421 ∧
+    niceLayerSum 11 3 = 1623931 ∧
+    niceLayerSum 11 4 = 196495641 ∧
+    niceLayerSum 11 5 = 23775972551 := by
+  decide
+
+/-- Lemma 6.1 & Theorem 8.7: Exponent sums in `(ab)^p = a^p b^p u^(sum i) z^(sum C(i,2))`
+    at `p = 5` (`10` and `10`, both `0 mod 5`) and `p = 7` (`21` and `35`, both `0 mod 7`). -/
+theorem hall_petrescu_exponent_sums_5_and_7 :
+    (0 + 1 + 2 + 3 + 4) = 10 ∧ 10 % 5 = 0 ∧
+    (0 + 0 + 1 + 3 + 6) = 10 ∧ 10 % 5 = 0 ∧
+    (0 + 1 + 2 + 3 + 4 + 5 + 6) = 21 ∧ 21 % 7 = 0 ∧
+    (0 + 0 + 1 + 3 + 6 + 10 + 15) = 35 ∧ 35 % 7 = 0 := by
+  decide
+
 end ExtremeGroups
+
+-- Axiom-footprint audit across all 43 formal theorems in `ExtremeGroups`:
+#print axioms ExtremeGroups.pow_odd_succ
+#print axioms ExtremeGroups.niceLayerSum_extremality
+#print axioms ExtremeGroups.niceLayerSum_rec
+#print axioms ExtremeGroups.quotient_extremality_step
+#print axioms ExtremeGroups.consistency_5_7_relations
+#print axioms ExtremeGroups.order_125_criterion_identity_mod
+#print axioms ExtremeGroups.order_125_criterion_identity
+#print axioms ExtremeGroups.order_125_criterion_mod5
+#print axioms ExtremeGroups.order_125_unique_k0_mod5
+#print axioms ExtremeGroups.witt_skew
+#print axioms ExtremeGroups.witt_derivation
+#print axioms ExtremeGroups.witt_jacobi
+#print axioms ExtremeGroups.cDiag_derivation
+#print axioms ExtremeGroups.lemma_8_5_triangular
+#print axioms ExtremeGroups.lemma_8_5_universal_diagonal
+#print axioms ExtremeGroups.lemma_8_5_cCoeff
+#print axioms ExtremeGroups.filiform_cDiag_const
+#print axioms ExtremeGroups.filiform_cCoeff_const
+#print axioms ExtremeGroups.filiform_induction_step
+#print axioms ExtremeGroups.jacobi_4_3_2_identity
+#print axioms ExtremeGroups.weight_9_c72_factorization
+#print axioms ExtremeGroups.jacobi_5_4_2_elimination
+#print axioms ExtremeGroups.jacobi_5_4_3_elimination
+#print axioms ExtremeGroups.vergne_weight_12_certificate
+#print axioms ExtremeGroups.vergne_weight_12_vanishing
+#print axioms ExtremeGroups.cutoff_p5_m9_certificate
+#print axioms ExtremeGroups.cutoff_p5_m9_vanishing
+#print axioms ExtremeGroups.cutoff_p7_m11_step1
+#print axioms ExtremeGroups.cutoff_p7_m11_step2_branch1
+#print axioms ExtremeGroups.cutoff_p7_m11_step2_branch2
+#print axioms ExtremeGroups.cutoff_p7_m11_certificate
+#print axioms ExtremeGroups.cutoff_p7_m11_vanishing
+#print axioms ExtremeGroups.witt_top_weight_residue_certificate
+#print axioms ExtremeGroups.order_7_9_congruence_invertible
+#print axioms ExtremeGroups.order_2401_criterion_identity
+#print axioms ExtremeGroups.order_2401_criterion_mod7
+#print axioms ExtremeGroups.affine_maximal_class_iff_n_eq_2
+#print axioms ExtremeGroups.extreme_strict_ineq_iff_eq
+#print axioms ExtremeGroups.prop_3_1_block_size
+#print axioms ExtremeGroups.thm_2E_d_transversal_count
+#print axioms ExtremeGroups.layer_deficit_term_nonneg_and_zero_iff
+#print axioms ExtremeGroups.concrete_sieve_counts
+#print axioms ExtremeGroups.hall_petrescu_exponent_sums_5_and_7

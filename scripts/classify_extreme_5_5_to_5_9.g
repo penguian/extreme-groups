@@ -128,8 +128,8 @@ RunClassifyExtreme5 := function()
     L := LowerCentralSeriesOfGroup(G9);
     G1 := TwoStepCentralizer(G9);
 
-    # Check centralizer condition [G_1, gamma_6(G)] = 1 (Theorem 9.5 / Lemma 8.2).
-    # By Lemma 8.2, if [G_1, gamma_6(G)] = 1 then gamma_7(G) (order 25) centralizes
+    # Check centralizer condition [G_1, gamma_6(G)] = 1 (Theorem 9.3 / Lemma 8.3).
+    # By Lemma 8.3, if [G_1, gamma_6(G)] = 1 then gamma_7(G) (order 25) centralizes
     # every core-free subgroup S <= G_1, forcing |N_G(S) : S| >= 25 > 5 and blocking
     # extremality. If any group had [G_1, gamma_6(G)] <> 1, we exhaustively test all
     # conjugacy classes of subgroups S <= G_1 of order 625 via SubgroupsSolvableGroup.

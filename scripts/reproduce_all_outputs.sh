@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Reproduce all 21 archival output files (4 .txt tables and 17 .log files)
-# deposited in Zenodo record 10.5281/zenodo.24083345.
+# Reproduce all 23 archival output files (4 .txt tables and 19 .log files)
+# deposited in Zenodo (concept DOI 10.5281/zenodo.24083344).
 #
 # Usage (from repository root):
 #   bash scripts/reproduce_all_outputs.sh [--timings] [OUTPUT_DIR]
@@ -57,7 +57,17 @@ if [ -z "$PY_SYMPY" ]; then
   exit 1
 fi
 
-echo "Reproducing all 21 archival files into: $OUTDIR"
+# Locate Lean 4 binary
+LEAN_BIN="$(command -v lean 2>/dev/null || true)"
+if [ -z "$LEAN_BIN" ] && [ -x "$HOME/.elan/bin/lean" ]; then
+  LEAN_BIN="$HOME/.elan/bin/lean"
+fi
+if [ -z "$LEAN_BIN" ]; then
+  echo "Error: Could not find 'lean' (Lean 4.35.0+). Install via elan or add ~/.elan/bin to PATH." >&2
+  exit 1
+fi
+
+echo "Reproducing all 23 archival files into: $OUTDIR"
 
 # Phase 1: Generate iso_classes.txt and launch parallel long-running GAP jobs
 gap -q --quitonbreak scripts/iso_orbits_classify.g < /dev/null &
@@ -96,18 +106,11 @@ gap -q --quitonbreak scripts/verify_E5_stabilisers_normal_form.g < /dev/null > "
 gap -q --quitonbreak scripts/verify_fixed_point_layers.g < /dev/null > "$OUTDIR/verify_fixed_point_layers.log"
 gap -q --quitonbreak scripts/google_ai_subst_e5.g < /dev/null > "$OUTDIR/google_ai_subst_e5.log"
 gap -q --quitonbreak scripts/classify_extreme_3_max_class.g < /dev/null > "$OUTDIR/classify_extreme_3_max_class.log"
+gap -q --quitonbreak scripts/audit_paper_assertions.g < /dev/null > "$OUTDIR/audit_paper_assertions.log"
 echo 'P_TO_RUN := 5; Read("scripts/count_max_class_totals.g");' | gap -q --quitonbreak > "$OUTDIR/count_max_class_totals_p5.log"
 echo 'P_TO_RUN := 7; Read("scripts/count_max_class_totals.g");' | gap -q --quitonbreak > "$OUTDIR/count_max_class_totals_p7.log"
 "$PY_SYMPY" scripts/verify_jacobi_witt_factorizations.py > "$OUTDIR/verify_jacobi_witt_factorizations.log"
-
-# Run Lean 4 formal verification check if Lean 4 is installed
-LEAN_BIN="$(command -v lean 2>/dev/null || true)"
-if [ -z "$LEAN_BIN" ] && [ -x "$HOME/.elan/bin/lean" ]; then
-  LEAN_BIN="$HOME/.elan/bin/lean"
-fi
-if [ -n "$LEAN_BIN" ]; then
-  "$LEAN_BIN" scripts/verify_extreme_groups.lean
-fi
+"$LEAN_BIN" scripts/verify_extreme_groups.lean > "$OUTDIR/verify_extreme_groups_lean.log"
 
 # Wait for each parallel background job explicitly so set -e catches any non-zero exit
 for pid in "${BG_PIDS[@]}"; do
@@ -133,7 +136,7 @@ python3 scripts/iso_summary.py > "$OUTDIR/iso_summary.txt"
 N_TXT=$(ls -1 "$OUTDIR"/*.txt 2>/dev/null | wc -l)
 N_LOG=$(ls -1 "$OUTDIR"/*.log 2>/dev/null | wc -l)
 echo "Done: generated $N_TXT .txt tables and $N_LOG .log files in $OUTDIR"
-if [ "$N_TXT" -ne 4 ] || [ "$N_LOG" -ne 17 ]; then
-  echo "Error: Expected 4 .txt and 17 .log files, got $N_TXT .txt and $N_LOG .log" >&2
+if [ "$N_TXT" -ne 4 ] || [ "$N_LOG" -ne 19 ]; then
+  echo "Error: Expected 4 .txt and 19 .log files, got $N_TXT .txt and $N_LOG .log" >&2
   exit 1
 fi

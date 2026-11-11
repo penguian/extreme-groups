@@ -3,7 +3,7 @@
 This repository contains the complete computational verification scripts and libraries for the paper:
 > **Revisiting extreme transitive $p$-groups of maximal class**  
 > Paul C. Leopardi (2026).  
-> Archival Data: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24083345.svg)](https://doi.org/10.5281/zenodo.24083345)
+> Computational verification and classification datasets: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24083344.svg)](https://doi.org/10.5281/zenodo.24083344)
 
 ---
 
@@ -32,53 +32,54 @@ All verification scripts should be executed from the **root directory** of this 
 
 ```text
 extreme-groups/
-├── LICENSE                            # MIT License
-├── README.md                          # This document
-├── lib/                               # Core mathematical libraries
-│   ├── alpha_lib.g                    # 1982 family presentation generators (DescGroup, ConsistentAlphas)
-│   ├── iso_orbits_lib.g               # Automorphism group & orbit partition algorithms
-│   ├── google_ai_subst_lib.g          # Polynomial substitution group calculations
-│   ├── klg_lib.g                      # Matrix PcGroups, TwoStepCentralizer, and UltraFastF counters
-│   └── timings_lib.g                  # Optional runtime reporting (--timings / SHOW_TIMINGS)
-└── scripts/                           # Primary verification drivers
-    ├── reproduce_all_outputs.sh       # Automated driver generating all 4 .txt tables & 17 .log files
-    ├── classify_extreme_5_5_to_5_9.g  # Complete ANUPQ coclass-1 classification for p=5 (orders 5^3..5^9)
-    ├── classify_extreme_7_7_and_7_9.g # Complete ANUPQ coclass-1 classification for p=7 (orders 7^5..7^9)
-    ├── classify_extreme_3_max_class.g # Extreme maximal-class 3-groups: orders 3^3, 3^5 (3 classes) and 3^7 (none)
-    ├── count_max_class_totals.g       # Total maximal-class groups of order p^4..p^7 (all parents) vs published counts; p=5, 7
-    ├── branch_depth_extreme.g         # Coclass-1 branch B_4 and depth audit for p=3, 5, 7 (Prop. 8.4 & Table 3)
-    ├── check_capable_extreme_7_9.g    # Verifies 0 of the 20 capable groups at 7^9 are extreme (terminality of 3,677 classes)
-    ├── verify_witt_pole_anupq.g       # ANUPQ verification of G(11,m) extremality & Witt pole termination of G(p,p) for p=5..17
-    ├── verify_jacobi_witt_factorizations.py # SymPy verification of Vergne-Jacobi & Witt factorizations (Props. 9.1-9.2)
-    ├── verify_extreme_groups.lean     # Zero-dependency Lean 4.35.0 formal verification of sieve & Lie algebra certificates
-    ├── verify_extreme_7_9.g           # Independent certificate for order-7^9 extreme group in the rho=2 sector
-    ├── verify_consistency_and_case_counts.g # 625 consistent presentations & 42/3/25 case split
-    ├── verify_anupq_completeness.g    # Exhaustive ANUPQ fit of all 70 order-5^7 descendants of E_5
-    ├── verify_E5_stabilisers_normal_form.g  # 125 candidate stabilizers T(k,j,b) of E_5
-    ├── test_Sk_all.g                  # Lemma 6.1 & Theorem 6.2 on order-125 stabilizers
-    ├── verify_fixed_point_layers.g    # Fixed-point layer distribution across 375 presentations
+├── LICENSE                                    # MIT License
+├── README.md                                  # This document
+├── lib/                                       # Core mathematical libraries
+│   ├── alpha_lib.g                            # 1982 family presentation generators (DescGroup, ConsistentAlphas)
+│   ├── google_ai_subst_lib.g                  # Polynomial substitution group calculations
+│   ├── iso_orbits_lib.g                       # Automorphism group & orbit partition algorithms
+│   ├── klg_lib.g                              # Matrix PcGroups, TwoStepCentralizer, and UltraFastF counters
+│   └── timings_lib.g                          # Optional runtime reporting (--timings / SHOW_TIMINGS)
+└── scripts/                                   # Primary verification drivers
+    ├── audit_paper_assertions.g               # Prose, affine chain-ring, E_5 lattice, mu(G), Case 2/3, 7^9 d7[85], & Witt basis audit
+    ├── branch_depth_extreme.g                 # Coclass-1 branch B_4 and depth audit for p=3, 5, 7 (Prop. 8.4 & Table 3)
+    ├── check_capable_extreme_7_9.g            # Verifies 0 of the 20 capable groups at 7^9 are extreme (terminality of 3,677 classes)
+    ├── classify_extreme_3_max_class.g         # Extreme maximal-class 3-groups: orders 3^3, 3^5 (3 classes) and 3^7 (none)
+    ├── classify_extreme_5_5_to_5_9.g          # Complete ANUPQ coclass-1 classification for p=5 (orders 5^3..5^9)
+    ├── classify_extreme_7_7_and_7_9.g         # Complete ANUPQ coclass-1 classification for p=7 (orders 7^5..7^9)
+    ├── count_max_class_totals.g               # Total maximal-class groups of order p^4..p^7 (p=5) and p^4..p^8 (p=7) vs published counts
+    ├── exhaustive_5_7/                        # Parallel parameter-sweep batch jobs
+    │   ├── all.txt                            # Exhaustive per-presentation results
+    │   └── job0.g ... job5.g                  # Distributed fixed-point search across 625 presentations
+    ├── google_ai_subst_e5.g                   # Proof that E_5 is isomorphic to substitution group G(5,5)
+    ├── iso_class_invariants.g                 # Computes all invariants in Table 1
+    ├── iso_classes.txt                        # Serialized 70 isomorphism classes and orbits
+    ├── iso_orbits_classify.g                  # Generates iso_classes.txt by orbit partition
+    ├── iso_summary.py                         # Summary and cross-validation of invariants
+    ├── reproduce_all_outputs.sh               # Automated driver generating all 4 .txt tables & 19 .log files
+    ├── test_Sk_all.g                          # Lemma 6.1 & Theorem 6.2 on order-125 stabilizers
+    ├── verify_E5_stabilisers_normal_form.g    # 125 candidate stabilizers T(k,j,b) of E_5
+    ├── verify_anupq_completeness.g            # Exhaustive ANUPQ fit of all 70 order-5^7 descendants of E_5
     ├── verify_cknp_1E_2E_on_extreme_classes.g # CKNP Theorems 1E & 2E on 24 extreme classes
-    ├── google_ai_subst_e5.g           # Proof that E_5 is isomorphic to substitution group G(5,5)
-    ├── iso_orbits_classify.g          # Generates iso_classes.txt by orbit partition
-    ├── iso_class_invariants.g         # Computes all invariants in Table 1
-    ├── iso_summary.py                 # Summary and cross-validation of invariants
-    ├── iso_classes.txt                # Serialized 70 isomorphism classes and orbits
-    └── exhaustive_5_7/                # Parallel parameter-sweep batch jobs
-        ├── job0.g ... job5.g          # Distributed fixed-point search across 625 presentations
-        └── all.txt                    # Exhaustive per-presentation results
+    ├── verify_consistency_and_case_counts.g   # 625 consistent presentations & 42/3/25 case split
+    ├── verify_extreme_7_9.g                   # Independent certificate for order-7^9 extreme group in the rho=2 sector
+    ├── verify_extreme_groups.lean             # Zero-dependency Lean 4.35.0 formal proofs (43 theorems) & #print axioms audit
+    ├── verify_fixed_point_layers.g            # Fixed-point layer distribution across 375 presentations
+    ├── verify_jacobi_witt_factorizations.py   # SymPy verification of Vergne-Jacobi & Witt factorizations (Props. 9.1-9.2)
+    └── verify_witt_pole_anupq.g               # ANUPQ verification of G(11,m) extremality & Witt pole termination of G(p,p) for p=5..17
 ```
 
 ---
 
 ## Reproduction Guide
 
-### 0. Automated Full Reproduction (All 4 `.txt` Tables and 17 `.log` Files)
-To automatically reproduce the complete archival dataset deposited in Zenodo (`10.5281/zenodo.24083345` — 4 `.txt` tables and 17 `.log` files) into a new or empty destination directory:
+### 0. Automated Full Reproduction (All 4 `.txt` Tables and 19 `.log` Files)
+To automatically reproduce the complete archival dataset deposited in Zenodo (concept DOI `10.5281/zenodo.24083344` — 4 `.txt` tables and 19 `.log` files) into a new or empty destination directory:
 ```bash
 bash scripts/reproduce_all_outputs.sh ../extreme-groups-output
 ```
 *(For safety, `reproduce_all_outputs.sh` requires the destination directory to be new or empty and refuses to overwrite a non-empty directory.)*
-By default, runtime stamps are omitted so that all 21 output files are 100% deterministic across runs and machines. To include millisecond runtime stamps in `.log` outputs, pass `--timings` (or set `SHOW_TIMINGS=1` / `-c 'SHOW_TIMINGS:=true;'` when invoking individual GAP scripts):
+By default, runtime stamps are omitted so that all 23 output files are 100% deterministic across runs and machines. To include millisecond runtime stamps in `.log` outputs, pass `--timings` (or set `SHOW_TIMINGS=1` / `-c 'SHOW_TIMINGS:=true;'` when invoking individual GAP scripts):
 ```bash
 bash scripts/reproduce_all_outputs.sh --timings ../extreme-groups-output-timed
 gap -q scripts/classify_extreme_5_5_to_5_9.g --timings
@@ -103,7 +104,7 @@ SHOW_TIMINGS=1 gap -q scripts/classify_extreme_5_5_to_5_9.g
   ```bash
   gap -q scripts/classify_extreme_3_max_class.g
   ```
-  *Result:* Extreme maximal-class 3-groups exist at orders $3^3$ (2 classes) and $3^5$ (3 classes, `SmallGroup(243,28..30)`, derived length 2, exponent 9), and none at order $3^7$ (6 maximal-class groups, 0 extreme); by Lemma K0 none exists at any odd order $3^m$, $m\ge 7$ (runtime: seconds).
+  *Result:* Extreme maximal-class 3-groups exist at orders $3^3$ (2 classes) and $3^5$ (3 classes, `SmallGroup(243,28..30)`, derived length 2, exponent 9), and none at order $3^7$ (6 maximal-class groups, 0 extreme); by Lemma 2.5 (Corollary 3.3) none exists at any odd order $3^m$, $m\ge 7$ (runtime: seconds).
 
 ### 2. Order $5^7$ Descendants of $E_5$ (Sections 5 & 6, Table 1)
 - **Presentation consistency and case counts:**
@@ -135,7 +136,7 @@ SHOW_TIMINGS=1 gap -q scripts/classify_extreme_5_5_to_5_9.g
   gap -q scripts/google_ai_subst_e5.g
   ```
 
-### 4. Total Maximal-Class Counts, Coclass-1 Branch $\mathcal B_4$ Audit ($p = 3, 5, 7$), and Witt Pole Checks ($p \ge 5$)
+### 4. Total Maximal-Class Counts, Coclass-1 Branch $\mathcal B_4$ Audit ($p = 3, 5, 7$), Witt Pole Checks ($p \ge 5$), and Full Paper Audit
 
 ```bash
 echo "P_TO_RUN := 5; Read(\"scripts/count_max_class_totals.g\");" | gap -q
@@ -143,11 +144,12 @@ echo "P_TO_RUN := 7; Read(\"scripts/count_max_class_totals.g\");" | gap -q
 gap -q scripts/branch_depth_extreme.g
 gap -q scripts/check_capable_extreme_7_9.g
 gap -q scripts/verify_witt_pole_anupq.g
+gap -q scripts/audit_paper_assertions.g
 python3 scripts/verify_jacobi_witt_factorizations.py
 lean scripts/verify_extreme_groups.lean
 ```
 
-Builds all maximal-class groups of order $p^n$ from all maximal-class parents of order $p^{n-1}$ and compares the totals with published values ($99$ at $5^7$: Newman 1990, O'Brien--Vaughan-Lee 2005; $m(p,n)$ of Lee--Vaughan-Lee for $p=7$), audits the subtree in branch $\mathcal B_4$ of $\mathcal T(p)$ (Proposition 8.4 & Table 3), confirms in ANUPQ that the positive Witt group $G(p,p)$ has $2p^2+3p+3$ immediate maximal-class descendants of order $p^{p+1}$ with $0$ capable for $p\in\{7,11,13,17\}$ (Proposition 9.2(2)), verifies all graded Lie algebra Jacobi and Witt factorizations symbolically in SymPy, and machine-checks the sieve, collection, and Nullstellensatz obstruction certificates in Lean 4.
+Builds all maximal-class groups of order $p^n$ from all maximal-class parents of order $p^{n-1}$ and compares the totals with published values ($99$ at $5^7$: Newman 1990, O'Brien--Vaughan-Lee 2005; Blackburn 1958, Sec. 4 for $7^4$--$7^5$, O'Brien--Vaughan-Lee 2005, Thm. 4, Tables 2--3 for $7^6$--$7^7$, and Lee--Vaughan-Lee 2024, Thm. 1 Lie-ring count $1{,}988$ for $7^8$), audits the subtree in branch $\mathcal B_4$ of $\mathcal T(p)$ (Proposition 8.4 & Table 3), confirms in ANUPQ that the positive Witt group $G(p,p)$ has $2p^2+3p+3$ immediate maximal-class descendants of order $p^{p+1}$ with $0$ capable for $p\in\{7,11,13,17\}$ (Proposition 9.2(2)), audits all prose, affine chain-ring, $E_5$ subgroup-lattice, minimal faithful degree $\mu(G)$, Case 2/3, $\mu_3 = 6\lambda$ ($7^9$), and GAP Witt divided-power basis assertions (`audit_paper_assertions.g`), verifies all graded Lie algebra Jacobi and Witt factorizations symbolically in SymPy, and machine-checks all 43 sieve, collection, and Nullstellensatz obstruction theorems together with `#print axioms` kernel certificates in Lean 4.
 
 ---
 

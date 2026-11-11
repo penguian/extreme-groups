@@ -32,41 +32,41 @@ All verification scripts should be executed from the **root directory** of this 
 
 ```text
 extreme-groups/
-├── LICENSE                            # MIT License
-├── README.md                          # This document
-├── lib/                               # Core mathematical libraries
-│   ├── alpha_lib.g                    # 1982 family presentation generators (DescGroup, ConsistentAlphas)
-│   ├── iso_orbits_lib.g               # Automorphism group & orbit partition algorithms
-│   ├── google_ai_subst_lib.g          # Polynomial substitution group calculations
-│   ├── klg_lib.g                      # Matrix PcGroups, TwoStepCentralizer, and UltraFastF counters
-│   └── timings_lib.g                  # Optional runtime reporting (--timings / SHOW_TIMINGS)
-└── scripts/                           # Primary verification drivers
-    ├── reproduce_all_outputs.sh       # Automated driver generating all 4 .txt tables & 19 .log files
-    ├── classify_extreme_5_5_to_5_9.g  # Complete ANUPQ coclass-1 classification for p=5 (orders 5^3..5^9)
-    ├── classify_extreme_7_7_and_7_9.g # Complete ANUPQ coclass-1 classification for p=7 (orders 7^5..7^9)
-    ├── classify_extreme_3_max_class.g # Extreme maximal-class 3-groups: orders 3^3, 3^5 (3 classes) and 3^7 (none)
-    ├── count_max_class_totals.g       # Total maximal-class groups of order p^4..p^7 (p=5) and p^4..p^8 (p=7) vs published counts
-    ├── branch_depth_extreme.g         # Coclass-1 branch B_4 and depth audit for p=3, 5, 7 (Prop. 8.4 & Table 3)
-    ├── check_capable_extreme_7_9.g    # Verifies 0 of the 20 capable groups at 7^9 are extreme (terminality of 3,677 classes)
-    ├── verify_witt_pole_anupq.g       # ANUPQ verification of G(11,m) extremality & Witt pole termination of G(p,p) for p=5..17
-    ├── verify_jacobi_witt_factorizations.py # SymPy verification of Vergne-Jacobi & Witt factorizations (Props. 9.1-9.2)
-    ├── verify_extreme_groups.lean     # Zero-dependency Lean 4.35.0 formal proofs (43 theorems) & #print axioms audit
-    ├── audit_paper_assertions.g       # Prose, affine chain-ring, E_5 lattice, mu(G), Case 2/3, 7^9 d7[85], & Witt basis audit
-    ├── verify_extreme_7_9.g           # Independent certificate for order-7^9 extreme group in the rho=2 sector
-    ├── verify_consistency_and_case_counts.g # 625 consistent presentations & 42/3/25 case split
-    ├── verify_anupq_completeness.g    # Exhaustive ANUPQ fit of all 70 order-5^7 descendants of E_5
-    ├── verify_E5_stabilisers_normal_form.g  # 125 candidate stabilizers T(k,j,b) of E_5
-    ├── test_Sk_all.g                  # Lemma 6.1 & Theorem 6.2 on order-125 stabilizers
-    ├── verify_fixed_point_layers.g    # Fixed-point layer distribution across 375 presentations
+├── LICENSE                                    # MIT License
+├── README.md                                  # This document
+├── lib/                                       # Core mathematical libraries
+│   ├── alpha_lib.g                            # 1982 family presentation generators (DescGroup, ConsistentAlphas)
+│   ├── google_ai_subst_lib.g                  # Polynomial substitution group calculations
+│   ├── iso_orbits_lib.g                       # Automorphism group & orbit partition algorithms
+│   ├── klg_lib.g                              # Matrix PcGroups, TwoStepCentralizer, and UltraFastF counters
+│   └── timings_lib.g                          # Optional runtime reporting (--timings / SHOW_TIMINGS)
+└── scripts/                                   # Primary verification drivers
+    ├── audit_paper_assertions.g               # Prose, affine chain-ring, E_5 lattice, mu(G), Case 2/3, 7^9 d7[85], & Witt basis audit
+    ├── branch_depth_extreme.g                 # Coclass-1 branch B_4 and depth audit for p=3, 5, 7 (Prop. 8.4 & Table 3)
+    ├── check_capable_extreme_7_9.g            # Verifies 0 of the 20 capable groups at 7^9 are extreme (terminality of 3,677 classes)
+    ├── classify_extreme_3_max_class.g         # Extreme maximal-class 3-groups: orders 3^3, 3^5 (3 classes) and 3^7 (none)
+    ├── classify_extreme_5_5_to_5_9.g          # Complete ANUPQ coclass-1 classification for p=5 (orders 5^3..5^9)
+    ├── classify_extreme_7_7_and_7_9.g         # Complete ANUPQ coclass-1 classification for p=7 (orders 7^5..7^9)
+    ├── count_max_class_totals.g               # Total maximal-class groups of order p^4..p^7 (p=5) and p^4..p^8 (p=7) vs published counts
+    ├── exhaustive_5_7/                        # Parallel parameter-sweep batch jobs
+    │   ├── all.txt                            # Exhaustive per-presentation results
+    │   └── job0.g ... job5.g                  # Distributed fixed-point search across 625 presentations
+    ├── google_ai_subst_e5.g                   # Proof that E_5 is isomorphic to substitution group G(5,5)
+    ├── iso_class_invariants.g                 # Computes all invariants in Table 1
+    ├── iso_classes.txt                        # Serialized 70 isomorphism classes and orbits
+    ├── iso_orbits_classify.g                  # Generates iso_classes.txt by orbit partition
+    ├── iso_summary.py                         # Summary and cross-validation of invariants
+    ├── reproduce_all_outputs.sh               # Automated driver generating all 4 .txt tables & 19 .log files
+    ├── test_Sk_all.g                          # Lemma 6.1 & Theorem 6.2 on order-125 stabilizers
+    ├── verify_E5_stabilisers_normal_form.g    # 125 candidate stabilizers T(k,j,b) of E_5
+    ├── verify_anupq_completeness.g            # Exhaustive ANUPQ fit of all 70 order-5^7 descendants of E_5
     ├── verify_cknp_1E_2E_on_extreme_classes.g # CKNP Theorems 1E & 2E on 24 extreme classes
-    ├── google_ai_subst_e5.g           # Proof that E_5 is isomorphic to substitution group G(5,5)
-    ├── iso_orbits_classify.g          # Generates iso_classes.txt by orbit partition
-    ├── iso_class_invariants.g         # Computes all invariants in Table 1
-    ├── iso_summary.py                 # Summary and cross-validation of invariants
-    ├── iso_classes.txt                # Serialized 70 isomorphism classes and orbits
-    └── exhaustive_5_7/                # Parallel parameter-sweep batch jobs
-        ├── job0.g ... job5.g          # Distributed fixed-point search across 625 presentations
-        └── all.txt                    # Exhaustive per-presentation results
+    ├── verify_consistency_and_case_counts.g   # 625 consistent presentations & 42/3/25 case split
+    ├── verify_extreme_7_9.g                   # Independent certificate for order-7^9 extreme group in the rho=2 sector
+    ├── verify_extreme_groups.lean             # Zero-dependency Lean 4.35.0 formal proofs (43 theorems) & #print axioms audit
+    ├── verify_fixed_point_layers.g            # Fixed-point layer distribution across 375 presentations
+    ├── verify_jacobi_witt_factorizations.py   # SymPy verification of Vergne-Jacobi & Witt factorizations (Props. 9.1-9.2)
+    └── verify_witt_pole_anupq.g               # ANUPQ verification of G(11,m) extremality & Witt pole termination of G(p,p) for p=5..17
 ```
 
 ---

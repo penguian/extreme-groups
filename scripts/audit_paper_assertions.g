@@ -6,11 +6,14 @@
 # Usage (from repository root):
 #   gap -q scripts/audit_paper_assertions.g
 
-LoadPackage("anupq");
+if LoadPackage("anupq") = fail then
+  Error("The ANUPQ package is required to run scripts/audit_paper_assertions.g");
+fi;
 Read("lib/timings_lib.g");
 Read("lib/alpha_lib.g");
 Read("lib/iso_orbits_lib.g");
 
+# Check 1(a): Affine extreme group x |-> a*x + b over Z/p^n Z (a === 1 mod p).
 CheckAffineZpn := function(p, n)
   local deg, perms, u, G, S, f, orbs;
   deg := p^n;
@@ -35,6 +38,7 @@ CheckAffineZpn := function(p, n)
   fi;
 end;
 
+# Check 1(b): Affine extreme group over F_p[y]/(y^n) via base-p bijection with {1..p^n}.
 CheckAffineFpY := function(p, n)
   local deg, IntToPoly, PolyToInt, MulPoly, perms, i, u, G, S, f;
   deg := p^n;
@@ -88,44 +92,11 @@ CheckAffineFpY := function(p, n)
   fi;
 end;
 
-CheckWittDividedPowerBasis := function(p)
-  local W, b, u, okPlus, i, j;
-  W := SimpleLieAlgebra("W", [1], GF(p));
-  b := CanonicalBasis(W);
-  u := List([1..p-2], i -> (-Factorial(i+1) * One(GF(p))) * b[i+2]);
-  okPlus := true;
-  for i in [1..p-2] do
-    for j in [1..p-2] do
-      if i + j <= p - 2 then
-        if u[i] * u[j] <> ((i - j) * One(GF(p))) * u[i+j] then okPlus := false; fi;
-      fi;
-    od;
-  od;
-  Print("p=", p, ": dim(W)=", Length(b),
-        ", u_i = -(i+1)! b_{i+2} satisfies [u_i,u_j] = (i-j)u_{i+j} for i+j<=", p-2, ": ", okPlus, "\n");
-  if Length(b) <> p or not okPlus then
-    Error("Witt divided-power basis check failed!");
-  fi;
-end;
-
-RunAuditPaperAssertions := function()
-  local pair, E5, ccsE5, totSubsE5, coreFreeE5, muE5, extClassesE5,
+# Check 2: E_5 subgroup lattice, minimal faithful degree mu(E_5), and stabilizer orbit structure.
+CheckE5LatticeAndStructure := function()
+  local E5, ccsE5, totSubsE5, coreFreeE5, muE5, extClassesE5,
         F5, f5, c5, E5pres, xp, E1, Heis5, isoE5ok, idE1ok,
-        Tlist, autE5, orbT0, matchedTk, nonConjTk, singleOrbTk, normT0ok,
-        Gext, xG, H2_true, conjsH2, interSizes,
-        Gcase2, xc2, Sc2, normC2, fCase2,
-        Gcase3, xc3, Sc3, interC3, interC3ok, idxNormC3, fCase3,
-        lines, isoRecs, l, s, a3, sub, autSizes, ccCounts, dlSet, expSet, zSet, expCC, r,
-        nine, nineOrbIdx, t, k0, hasTypeIV,
-        G73, d74, d75, d76, d77, g85, x85, mu3_85, cap8_85, d9_85, allP1P6Triv, p;
-
-  Print("=== CHECK 1: Section 1 & Appendix A(2) Affine Chain-Ring Groups ===\n");
-  for pair in [[3,2],[3,3],[3,4],[5,2],[5,3]] do
-    CheckAffineZpn(pair[1], pair[2]);
-    CheckAffineFpY(pair[1], pair[2]);
-  od;
-
-  Print("\n=== CHECK 2: Section 1, Section 2 mu(G), & Section 4 E_5 Lattice and Structure ===\n");
+        Tlist, autE5, orbT0, matchedTk, nonConjTk, singleOrbTk, normT0ok;
   E5 := KLGpc(5, 5);
   ccsE5 := ConjugacyClassesSubgroups(E5);
   totSubsE5 := Sum(ccsE5, Size);
@@ -168,8 +139,11 @@ RunAuditPaperAssertions := function()
   if not (isoE5ok and idE1ok and nonConjTk and singleOrbTk and normT0ok) then
     Error("E_5 structural presentation, stabilizer orbit, or normalizer check failed!");
   fi;
+end;
 
-  Print("\n=== CHECK 3: Section 3 Literal 1982 NICE Clause (2) Counterexample for k >= j+2 ===\n");
+# Check 3: Section 3 literal 1982 NICE Clause (2) counterexample at k >= j + 2.
+CheckNiceClause2Counterexample := function()
+  local Gext, xG, H2_true, conjsH2, interSizes;
   Gext := DescGroup([0,1,2,4,0,0]);
   xG := Pcgs(Gext);
   H2_true := Subgroup(Gext, [xG[4], Comm(xG[4], xG[2]*xG[3]^3)]);
@@ -180,8 +154,14 @@ RunAuditPaperAssertions := function()
   if Length(conjsH2) <> 25 or interSizes <> [ [ 1, 500 ], [ 5, 100 ] ] then
     Error("Literal NICE Clause (2) check mismatch!");
   fi;
+end;
 
-  Print("\n=== CHECK 4: Section 5 Cases 2 & 3, Table 1 |Aut G|, and Section 7.2 Nine Tuples ===\n");
+# Check 4: Section 5 Cases 2 & 3, Table 1 invariants & |Aut G|, and Section 7.2 nine Type-I-only tuples.
+CheckOrder57CasesTable1AndNineTuples := function()
+  local Gcase2, xc2, Sc2, normC2, fCase2,
+        Gcase3, xc3, Sc3, interC3, interC3ok, idxNormC3, fCase3,
+        lines, isoRecs, l, s, a3, sub, autSizes, ccCounts, dlSet, expSet, zSet, expCC, r,
+        nine, nineOrbIdx, t, k0, hasTypeIV;
   Gcase2 := DescGroup([0,4,0,1,0,1]);
   xc2 := Pcgs(Gcase2); Sc2 := Subgroup(Gcase2, [xc2[2], xc2[4]]);
   normC2 := Size(Normalizer(Gcase2, Sc2));
@@ -203,6 +183,9 @@ RunAuditPaperAssertions := function()
   fi;
 
   lines := InputTextFile("scripts/iso_classes.txt");
+  if lines = fail then
+    Error("Could not open scripts/iso_classes.txt (run from repository root after scripts/iso_orbits_classify.g)");
+  fi;
   isoRecs := [];
   while not IsEndOfStream(lines) do
     l := ReadLine(lines);
@@ -270,8 +253,11 @@ RunAuditPaperAssertions := function()
   if Length(Set(nineOrbIdx)) <> 9 then
     Error("Section 7.2 nine tuples did not map to 9 distinct isomorphism classes!");
   fi;
+end;
 
-  Print("\n=== CHECK 5: Section 8.3 Sector mu_3 = 6*lambda (d7[85]) 409 Non-Extreme Descendants at 7^9 ===\n");
+# Check 5: Section 8.3 sector mu_3 = 6*lambda (d7[85]) 409 non-extreme descendants at order 7^9.
+CheckOrder79SectorMu3Eq6 := function()
+  local G73, d74, d75, d76, d77, g85, x85, mu3_85, cap8_85, d9_85, allP1P6Triv;
   G73 := ExtraspecialGroup(7^3, 7);
   d74 := Filtered(PqDescendants(G73 : StepSize := 1, CapableDescendants), g -> NilpotencyClassOfGroup(g) = 3);
   d75 := Filtered(PqDescendants(d74[1] : StepSize := 1, CapableDescendants),
@@ -294,6 +280,48 @@ RunAuditPaperAssertions := function()
   if mu3_85 <> 6 or Length(cap8_85) <> 2 or Length(d9_85) <> 409 or not allP1P6Triv then
     Error("d7[85] 409 check failed!");
   fi;
+end;
+
+# Check 6: Appendix A(2) GAP SimpleLieAlgebra("W", [1], GF(p)) divided-power basis rescaling.
+CheckWittDividedPowerBasis := function(p)
+  local W, b, u, okPlus, i, j;
+  W := SimpleLieAlgebra("W", [1], GF(p));
+  b := CanonicalBasis(W);
+  u := List([1..p-2], i -> (-Factorial(i+1) * One(GF(p))) * b[i+2]);
+  okPlus := true;
+  for i in [1..p-2] do
+    for j in [1..p-2] do
+      if i + j <= p - 2 then
+        if u[i] * u[j] <> ((i - j) * One(GF(p))) * u[i+j] then okPlus := false; fi;
+      fi;
+    od;
+  od;
+  Print("p=", p, ": dim(W)=", Length(b),
+        ", u_i = -(i+1)! b_{i+2} satisfies [u_i,u_j] = (i-j)u_{i+j} for i+j<=", p-2, ": ", okPlus, "\n");
+  if Length(b) <> p or not okPlus then
+    Error("Witt divided-power basis check failed!");
+  fi;
+end;
+
+RunAuditPaperAssertions := function()
+  local pair, p;
+  Print("=== CHECK 1: Section 1 & Appendix A(2) Affine Chain-Ring Groups ===\n");
+  for pair in [[3,2],[3,3],[3,4],[5,2],[5,3]] do
+    CheckAffineZpn(pair[1], pair[2]);
+    CheckAffineFpY(pair[1], pair[2]);
+  od;
+
+  Print("\n=== CHECK 2: Section 1, Section 2 mu(G), & Section 4 E_5 Lattice and Structure ===\n");
+  CheckE5LatticeAndStructure();
+
+  Print("\n=== CHECK 3: Section 3 Literal 1982 NICE Clause (2) Counterexample for k >= j+2 ===\n");
+  CheckNiceClause2Counterexample();
+
+  Print("\n=== CHECK 4: Section 5 Cases 2 & 3, Table 1 |Aut G|, and Section 7.2 Nine Tuples ===\n");
+  CheckOrder57CasesTable1AndNineTuples();
+
+  Print("\n=== CHECK 5: Section 8.3 Sector mu_3 = 6*lambda (d7[85]) 409 Non-Extreme Descendants at 7^9 ===\n");
+  CheckOrder79SectorMu3Eq6();
 
   Print("\n=== CHECK 6: Appendix A(2) GAP SimpleLieAlgebra(\"W\", [1], GF(p)) Divided-Power Basis ===\n");
   for p in [7, 11] do

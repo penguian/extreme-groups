@@ -605,7 +605,7 @@ theorem thm_2E_d_transversal_count (p : Int) (n : Nat) :
     rw [geomSum, Int.pow_succ]
     grind
 
-theorem pow_pos_of_ge_two {p : Int} (hp : 2 ≤ p) (a : Nat) : 1 ≤ p ^ a := by
+private theorem pow_pos_of_ge_two {p : Int} (hp : 2 ≤ p) (a : Nat) : 1 ≤ p ^ a := by
   induction a with
   | zero => simp
   | succ k ih =>
@@ -613,7 +613,7 @@ theorem pow_pos_of_ge_two {p : Int} (hp : 2 ≤ p) (a : Nat) : 1 ≤ p ^ a := by
     have : 1 * 2 ≤ p ^ k * p := Int.mul_le_mul ih hp (by omega) (by omega)
     omega
 
-theorem pow_strict_mono_of_ge_two {p : Int} (hp : 2 ≤ p) {a b : Nat} (hab : a < b) :
+private theorem pow_strict_mono_of_ge_two {p : Int} (hp : 2 ≤ p) {a b : Nat} (hab : a < b) :
     p ^ a < p ^ b := by
   induction hab with
   | refl =>
@@ -628,7 +628,7 @@ theorem pow_strict_mono_of_ge_two {p : Int} (hp : 2 ≤ p) {a b : Nat} (hab : a 
     have hmul : p ^ m * 2 ≤ p ^ m * p := Int.mul_le_mul (Int.le_refl _) hp (by omega) (by omega)
     omega
 
-theorem pow_le_mono_of_ge_two {p : Int} (hp : 2 ≤ p) {a b : Nat} (hab : a ≤ b) :
+private theorem pow_le_mono_of_ge_two {p : Int} (hp : 2 ≤ p) {a b : Nat} (hab : a ≤ b) :
     p ^ a ≤ p ^ b := by
   rcases Nat.eq_or_lt_of_le hab with rfl | hlt
   · exact Int.le_refl _
@@ -672,13 +672,23 @@ theorem concrete_sieve_counts :
     niceLayerSum 11 5 = 23775972551 := by
   decide
 
-/-- Lemma 6.1 & Theorem 8.7: Exponent sums in `(ab)^p = a^p b^p u^(sum i) z^(sum C(i,2))`
+/-- Sum `0 + 1 + ... + (p - 1)` of weight-2 commutator exponents in Hall-Petrescu `(ab)^p`. -/
+@[simp] def sumLinearExp : Nat → Nat
+  | 0     => 0
+  | k + 1 => sumLinearExp k + k
+
+/-- Sum `sum_{i=0}^{p-1} C(i, 2)` of weight-3 commutator exponents in Hall-Petrescu `(ab)^p`. -/
+@[simp] def sumBinom2Exp : Nat → Nat
+  | 0     => 0
+  | k + 1 => sumBinom2Exp k + k * (k - 1) / 2
+
+/-- Lemma 6.1 & Theorem 8.7: Exponent sums in `(ab)^p = a^p b^p u^(sum_{i=0}^{p-1} i) z^(sum_{i=0}^{p-1} C(i,2))`
     at `p = 5` (`10` and `10`, both `0 mod 5`) and `p = 7` (`21` and `35`, both `0 mod 7`). -/
 theorem hall_petrescu_exponent_sums_5_and_7 :
-    (0 + 1 + 2 + 3 + 4) = 10 ∧ 10 % 5 = 0 ∧
-    (0 + 0 + 1 + 3 + 6) = 10 ∧ 10 % 5 = 0 ∧
-    (0 + 1 + 2 + 3 + 4 + 5 + 6) = 21 ∧ 21 % 7 = 0 ∧
-    (0 + 0 + 1 + 3 + 6 + 10 + 15) = 35 ∧ 35 % 7 = 0 := by
+    sumLinearExp 5 = 10 ∧ sumLinearExp 5 % 5 = 0 ∧
+    sumBinom2Exp 5 = 10 ∧ sumBinom2Exp 5 % 5 = 0 ∧
+    sumLinearExp 7 = 21 ∧ sumLinearExp 7 % 7 = 0 ∧
+    sumBinom2Exp 7 = 35 ∧ sumBinom2Exp 7 % 7 = 0 := by
   decide
 
 end ExtremeGroups

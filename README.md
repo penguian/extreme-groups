@@ -3,7 +3,7 @@
 This repository contains the complete computational verification scripts and libraries for the paper:
 > **Revisiting extreme transitive $p$-groups of maximal class**  
 > Paul C. Leopardi (2026).  
-> Archival Data: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24083345.svg)](https://doi.org/10.5281/zenodo.24083345)
+> Computational verification and classification datasets: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24083344.svg)](https://doi.org/10.5281/zenodo.24083344)
 
 ---
 

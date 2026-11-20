@@ -1,14 +1,14 @@
 # classify_extreme_7_7_and_7_9.g
 # Complete enumeration and classification of extreme 7-groups of maximal class
-# of orders 7^5, 7^7, and 7^9 (Theorem 8.7 and Table 2).
+# of orders 7^5, 7^7, and 7^9.
 
-LoadPackage("anupq");
-Read("lib/klg_lib.g");
+Read("lib/extreme_lib.g");
 Read("lib/timings_lib.g");
+RequirePackage("anupq");
 
 # Given the polycyclic generating sequence x = Pcgs(G9) of a maximal-class group G9
 # of order 7^9 in one of the surviving sectors (where c_{6,2} - c_{6,3} - mu_3 * c_{7,2} <> 0 mod 7),
-# return the unique parameter k_0 in {0..6} from Theorem 8.7 for which
+# return the unique parameter k_0 in {0..6} for which
 #   (c_{6,2} - c_{6,3} - mu_3 * c_{7,2}) * k_0 === c_{6,2} * alpha_6 + beta + alpha_2 * c_{7,2} (mod 7),
 # ensuring that S = <x_4, x_2 * x_3^{k_0}> has order 7^4 = 2401.
 UniqueStabilizerParam79 := function(x)
@@ -27,13 +27,11 @@ UniqueStabilizerParam79 := function(x)
 end;
 
 RunClassifyExtreme7 := function()
-  local t_start, G3, d4_all, d4_cap, d5_all, d5_cap, g5, d6_all, d6_cap, g6,
+  local G3, d4_all, d4_cap, d5_all, d5_cap, g5, d6_all, d6_cap, g6,
         d7, target_f7, ext7, idx7, G7, x, S7, cap7_indices, cap8_by_idx7,
         c8, c8_cap, mu3, c52, surviving_cap7, target_f9, total_7_9,
         total_ext_7_9, cap8, G8, d9, branch_ok, dl_list, exp_list, idx9,
         G9, k0, S, cur, ok, j, G9_1, x1, k0_1, f_val;
-
-  t_start := Runtime();
 
   Print("====================================================================\n");
   Print("CLASSIFICATION OF EXTREME 7-GROUPS OF MAXIMAL CLASS (ORDERS 7^5..7^9)\n");
@@ -59,7 +57,7 @@ RunClassifyExtreme7 := function()
   Print("Order 7^7 (from g6): ", Length(d7), " descendants\n");
 
   # Classify all 154 groups in d7 at order 7^7
-  target_f7 := (7^7 + 1) / 8;
+  target_f7 := ExtremeTargetF(7, 7);
   ext7 := [];
   for idx7 in [1..Length(d7)] do
     G7 := d7[idx7];
@@ -67,7 +65,7 @@ RunClassifyExtreme7 := function()
     if IsOne(Comm(x[4], x[3])) or IsOne(Comm(x[5], x[2])) then
       continue;
     fi;
-    # Check x_2^7 = 1 (exponent of P_1 is 7) and S_0 = <x_4, x_2, [x_4, x_2]>
+    # Check S_0 = <x_4, x_2> of order 7^3
     S7 := Subgroup(G7, [x[4], x[2]]);
     if Size(S7) = 343 and not (x[7] in S7) then
       if UltraFastF(G7, S7) = target_f7 then
@@ -76,6 +74,9 @@ RunClassifyExtreme7 := function()
     fi;
   od;
   Print("Order 7^7 extreme groups: ", Length(ext7), " classes -> ", ext7, "\n\n");
+  if Length(d7) <> 154 or Length(ext7) <> 35 then
+    Error("Order 7^7 classification count mismatch!");
+  fi;
 
   # Audit all 9 capable groups in d7 and identify those that are both extreme at 7^7
   # and have capable descendants at 7^8.
@@ -97,7 +98,7 @@ RunClassifyExtreme7 := function()
 
   # Among the 5 capable extreme groups at 7^7 ([85, 99, 113, 127, 141], mu_3 in {6,5,4,3,2}):
   # - d7[99] (mu_3 = 5 === -2 mod 7) has |cap8| = 0 (weight-9 Jacobi pole 2*lambda + mu_3 = 0);
-  # - d7[85] (mu_3 = 6 === -1 mod 7) has c_{7,2} = 0 at 7^9 (killed by Lemma 8.3);
+  # - d7[85] (mu_3 = 6 === -1 mod 7) has c_{7,2} = 0 at 7^9 (centralizer obstruction);
   # leaving the 3 surviving branches [113, 127, 141] (mu_3 in {4, 3, 2} mod 7).
   surviving_cap7 := Filtered(Intersection(ext7, cap7_indices),
     i -> Length(cap8_by_idx7[i]) > 0 and
@@ -107,7 +108,7 @@ RunClassifyExtreme7 := function()
   fi;
 
   Print("\n--- Order 7^9 classification across surviving capable groups d7[113], d7[127], d7[141] ---\n");
-  target_f9 := (7^9 + 1) / 8;
+  target_f9 := ExtremeTargetF(7, 9);
   total_7_9 := 0;
   total_ext_7_9 := 0;
 
@@ -169,9 +170,10 @@ RunClassifyExtreme7 := function()
   Print("====================================================================\n");
   Print("TOTAL SURVIVING 7^9 GROUPS : ", total_7_9, "\n");
   Print("TOTAL EXTREME 7^9 GROUPS   : ", total_ext_7_9, "\n");
-  if SHOW_TIMINGS then
-    Print("Total runtime              : ", Runtime() - t_start, " ms\n");
+  if total_7_9 <> 3677 or total_ext_7_9 <> 3677 then
+    Error("Order 7^9 surviving extreme count mismatch!");
   fi;
+  PrintTimingIfEnabled();
   Print("====================================================================\n");
 end;
 

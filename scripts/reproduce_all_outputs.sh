@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Reproduce all 23 archival output files (4 .txt tables and 19 .log files)
-# deposited in Zenodo (concept DOI 10.5281/zenodo.24083344).
+# Reproduce all 23 deterministic output files (4 .txt tables and 19 .log files)
+# of the extreme-groups computational and formal verification suite.
 #
 # Usage (from repository root):
 #   bash scripts/reproduce_all_outputs.sh [--timings] [OUTPUT_DIR]
-# Default: deterministic archival logs without runtime stamps.
+# Default: deterministic outputs without runtime stamps.
 # Pass --timings (or export SHOW_TIMINGS=1) to include millisecond runtime stamps.
 # Default OUTPUT_DIR: ../extreme-groups-output
 
@@ -67,7 +67,7 @@ if [ -z "$LEAN_BIN" ]; then
   exit 1
 fi
 
-echo "Reproducing all 23 archival files into: $OUTDIR"
+echo "Reproducing all 23 verification output files into: $OUTDIR"
 
 # Phase 1: Generate iso_classes.txt and launch parallel long-running GAP jobs
 gap -q --quitonbreak scripts/iso_orbits_classify.g < /dev/null &
@@ -75,7 +75,7 @@ PID_ISO=$!
 
 BG_PIDS=()
 for j in 0 1 2 3 4 5; do
-  gap -q --quitonbreak "scripts/exhaustive_5_7/job${j}.g" < /dev/null &
+  SLICE_REM="$j" gap -q --quitonbreak scripts/exhaustive_5_7/run_slice.g < /dev/null &
   BG_PIDS+=("$!")
 done
 
@@ -98,15 +98,15 @@ cp scripts/iso_classes.txt "$OUTDIR/iso_classes.txt"
 
 # Phase 2: Fast scripts and scripts reading scripts/iso_classes.txt
 gap -q --quitonbreak scripts/iso_class_invariants.g < /dev/null > "$OUTDIR/iso_class_invariants.txt"
-gap -q --quitonbreak scripts/verify_consistency_and_case_counts.g < /dev/null > "$OUTDIR/verify_consistency_and_case_counts.log"
-gap -q --quitonbreak scripts/verify_anupq_completeness.g < /dev/null > "$OUTDIR/verify_anupq_completeness.log"
-gap -q --quitonbreak scripts/verify_cknp_1E_2E_on_extreme_classes.g < /dev/null > "$OUTDIR/verify_cknp_1E_2E_on_extreme_classes.log"
-gap -q --quitonbreak scripts/test_Sk_all.g < /dev/null > "$OUTDIR/test_Sk_all.log"
-gap -q --quitonbreak scripts/verify_E5_stabilisers_normal_form.g < /dev/null > "$OUTDIR/verify_E5_stabilisers_normal_form.log"
-gap -q --quitonbreak scripts/verify_fixed_point_layers.g < /dev/null > "$OUTDIR/verify_fixed_point_layers.log"
-gap -q --quitonbreak scripts/google_ai_subst_e5.g < /dev/null > "$OUTDIR/google_ai_subst_e5.log"
+gap -q --quitonbreak scripts/verify_5_7_consistency_and_types.g < /dev/null > "$OUTDIR/verify_5_7_consistency_and_types.log"
+gap -q --quitonbreak scripts/verify_5_7_anupq_completeness.g < /dev/null > "$OUTDIR/verify_5_7_anupq_completeness.log"
+gap -q --quitonbreak scripts/verify_5_7_extreme_tower.g < /dev/null > "$OUTDIR/verify_5_7_extreme_tower.log"
+gap -q --quitonbreak scripts/verify_5_7_stabilizer_criterion.g < /dev/null > "$OUTDIR/verify_5_7_stabilizer_criterion.log"
+gap -q --quitonbreak scripts/verify_e5_stabilizers.g < /dev/null > "$OUTDIR/verify_e5_stabilizers.log"
+gap -q --quitonbreak scripts/verify_5_7_fixed_point_layers.g < /dev/null > "$OUTDIR/verify_5_7_fixed_point_layers.log"
+gap -q --quitonbreak scripts/verify_e5_substitution.g < /dev/null > "$OUTDIR/verify_e5_substitution.log"
 gap -q --quitonbreak scripts/classify_extreme_3_max_class.g < /dev/null > "$OUTDIR/classify_extreme_3_max_class.log"
-gap -q --quitonbreak scripts/audit_paper_assertions.g < /dev/null > "$OUTDIR/audit_paper_assertions.log"
+gap -q --quitonbreak scripts/verify_auxiliary_assertions.g < /dev/null > "$OUTDIR/verify_auxiliary_assertions.log"
 echo 'P_TO_RUN := 5; Read("scripts/count_max_class_totals.g");' | gap -q --quitonbreak > "$OUTDIR/count_max_class_totals_p5.log"
 echo 'P_TO_RUN := 7; Read("scripts/count_max_class_totals.g");' | gap -q --quitonbreak > "$OUTDIR/count_max_class_totals_p7.log"
 "$PY_SYMPY" scripts/verify_jacobi_witt_factorizations.py > "$OUTDIR/verify_jacobi_witt_factorizations.log"

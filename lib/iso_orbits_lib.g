@@ -1,4 +1,6 @@
-# Exact isomorphism orbits within the 1982 descendant pcp family (no anupq / SmallGroups needed).
+# iso_orbits_lib.g
+# Exact isomorphism orbits within the order-5^7 parametric descendant pcp family
+# (no anupq / SmallGroups needed), plus shared parser for scripts/iso_classes.txt.
 #
 # Method. Let G = G_alpha. G1 := C_G(gamma2/gamma4) is characteristic of index 5, and the family
 # pcp has x1 notin G1, x2 in G1 \ gamma2 (both checked below). An isomorphism G_beta -> G_alpha
@@ -8,7 +10,10 @@
 # there is an epimorphism G_beta -> <y1,y2> = G_alpha, an isomorphism since both have order 5^7.
 # So Orbit(alpha) = { beta read off from fitting pairs (r, y2) }, exactly.
 # Also |Aut(G_alpha)| = sum over reps r of |r^G| * #{ y2 : (r,y2) fits with beta = alpha }.
-Read("lib/alpha_lib.g");
+
+if not IsBound(ISO_ORBITS_LIB_LOADED) then
+
+Read("lib/param_5_7_lib.g");
 
 # Exponent e with z = x7^e, or fail if z notin <x7>.
 Z7 := function(pcgs, z)
@@ -20,7 +25,7 @@ end;
 
 # Return beta (list of 6 residues) if (y1,y2) fits the family pcp, else fail.
 FitPair := function(pcgs, y1, y2)
-  local y3, y4, y5, y6, y7, c, inv, b, t, one, e;
+  local y3, y4, y5, y6, y7, c, inv, b, t, one;
   one := One(y1);
   y3 := Comm(y2, y1); y4 := Comm(y3, y1); y5 := Comm(y4, y1);
   y6 := Comm(y5, y1); y7 := Comm(y6, y1);
@@ -73,3 +78,35 @@ OrbitAndAut := function(a)
   od;
   return rec(alpha := a, orbit := orb, aut := aut);
 end;
+
+# Parse serialized isomorphism class records from filename (e.g. scripts/iso_classes.txt).
+ReadIsoClasses57 := function(filename)
+  local stream, recs, line, s;
+  stream := InputTextFile(filename);
+  if stream = fail then
+    Error("Could not open ", filename, " (run from repository root after scripts/iso_orbits_classify.g)");
+  fi;
+  recs := [];
+  while not IsEndOfStream(stream) do
+    line := ReadLine(stream);
+    if line <> fail then
+      line := Chomp(line);
+      if Length(line) > 0 and line[1] in "0123456789" then
+        s := SplitString(line, ";");
+        Add(recs, rec(
+          idx := EvalString(s[1]),
+          rep := EvalString(s[2]),
+          type := EvalString(s[3]),
+          orbitSize := EvalString(s[4]),
+          aut := EvalString(s[5]),
+          orbit := EvalString(s[6])
+        ));
+      fi;
+    fi;
+  od;
+  CloseStream(stream);
+  return recs;
+end;
+
+ISO_ORBITS_LIB_LOADED := true;
+fi;

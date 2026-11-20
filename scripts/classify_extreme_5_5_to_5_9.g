@@ -2,19 +2,17 @@
 # Complete enumeration and classification of extreme 5-groups of maximal class
 # across orders 5^3, 5^5, 5^7, and 5^9.
 
-LoadPackage("anupq");
-Read("lib/klg_lib.g");
+Read("lib/extreme_lib.g");
 Read("lib/timings_lib.g");
+RequirePackage("anupq");
 
 RunClassifyExtreme5 := function()
-  local t_start, G53, G53_25, x53, S53, f53_5, x53_25, S53_25, f53_25, d4_from_25,
+  local G53, G53_25, x53, S53, f53_5, x53_25, S53_25, f53_25, d4_from_25,
         target_f3, d4_all, d4_cap, d5_all, d5_cap, E5, xE5, S5,
         target_f5, f5_val, d6_all, d6_cap, g6, d7_from_g6, d7, target_f7,
-        ext7, non_ext7, idx7, G7, x, is_extreme, best_f, k, S, f_val, cap7,
+        ext7, non_ext7, idx7, G7, x, is_extreme, k, S, f_val, cap7,
         current, step, next_level, G, d, H, target_f9, ext9, c72_zero_count,
         idx9, G9, L, G1;
-
-  t_start := Runtime();
 
   Print("====================================================================\n");
   Print("CLASSIFICATION OF EXTREME 5-GROUPS OF MAXIMAL CLASS (ORDERS 5^5..5^9)\n");
@@ -23,7 +21,7 @@ RunClassifyExtreme5 := function()
   # --- Phase 1: Orders 5^3 -> 5^4 -> 5^5 ---
   G53 := ExtraspecialGroup(5^3, 5);
   G53_25 := ExtraspecialGroup(5^3, 25);
-  target_f3 := (5^3 + 1) / 6; # 21
+  target_f3 := ExtremeTargetF(5, 3); # 21
   x53 := Pcgs(G53);
   S53 := Subgroup(G53, [x53[2]]);
   f53_5 := UltraFastF(G53, S53);
@@ -51,8 +49,11 @@ RunClassifyExtreme5 := function()
   E5 := d5_cap[2];
   xE5 := Pcgs(E5);
   S5 := Subgroup(E5, [xE5[4], xE5[2]]);
-  target_f5 := (5^5 + 1) / 6; # 521
+  target_f5 := ExtremeTargetF(5, 5); # 521
   f5_val := UltraFastF(E5, S5);
+  if Size(Core(E5, S5)) <> 1 or f5_val <> target_f5 then
+    Error("Order 5^5 E_5 verification failed!");
+  fi;
   Print("Order 5^5 extreme capable group: E_5 =~ G(5,5), |S|=", Size(S5),
         ", Core=", Size(Core(E5, S5)), ", f=", f5_val,
         " (target=", target_f5, "), DL=", DerivedLength(E5), ", Exp=", Exponent(E5), "\n\n");
@@ -61,13 +62,16 @@ RunClassifyExtreme5 := function()
   d6_all := PqDescendants(E5 : StepSize := 1);
   d6_cap := PqDescendants(E5 : StepSize := 1, CapableDescendants);
   Print("Order 5^6 (from E_5): ", Length(d6_all), " descendants (", Length(d6_cap), " capable)\n");
+  if Length(d6_all) <> 18 or Length(d6_cap) <> 1 then
+    Error("Order 5^6 descendant count mismatch!");
+  fi;
 
   g6 := d6_cap[1];
   d7_from_g6 := PqDescendants(g6 : StepSize := 1);
   d7 := Filtered(d7_from_g6, d -> NilpotencyClassOfGroup(d) = 6);
   Print("Order 5^7 (from g6, class 6): ", Length(d7), " isomorphism classes\n");
 
-  target_f7 := (5^7 + 1) / 6; # 13021
+  target_f7 := ExtremeTargetF(5, 7); # 13021
   ext7 := [];
   non_ext7 := [];
 
@@ -75,12 +79,10 @@ RunClassifyExtreme5 := function()
     G7 := d7[idx7];
     x := Pcgs(G7);
     is_extreme := false;
-    best_f := 0;
     for k in [0..4] do
       S := Subgroup(G7, [x[4], x[2] * x[3]^k]);
       if Size(S) = 125 and not (x[7] in S) and Size(Core(G7, S)) = 1 then
         f_val := UltraFastF(G7, S);
-        if f_val > best_f then best_f := f_val; fi;
         if f_val = target_f7 then
           is_extreme := true;
           break;
@@ -96,9 +98,12 @@ RunClassifyExtreme5 := function()
 
   Print("Order 5^7 extreme groups: ", Length(ext7), " classes out of ", Length(d7), "\n");
   Print("Order 5^7 extreme indices: ", ext7, "\n\n");
+  if Length(d7) <> 70 or Length(ext7) <> 24 then
+    Error("Order 5^7 classification count mismatch!");
+  fi;
 
   # --- Phase 3: Orders 5^7 -> 5^8 -> 5^9 ---
-  # 1. Check capability of the extreme 5^7 branch
+  # 1. Check capability of the E_5 5^7 branch
   cap7 := Filtered(d7, d -> Length(PqDescendants(d : StepSize := 1)) > 0);
   Print("Order 5^7 capable groups from E_5 branch: ", Length(cap7), "\n");
 
@@ -119,7 +124,7 @@ RunClassifyExtreme5 := function()
   od;
   Print("Total maximal-class groups of order 5^9 (class 8): ", Length(current), "\n");
 
-  target_f9 := (5^9 + 1) / 6; # 325521
+  target_f9 := ExtremeTargetF(5, 9); # 325521
   ext9 := [];
   c72_zero_count := 0;
 
@@ -128,11 +133,10 @@ RunClassifyExtreme5 := function()
     L := LowerCentralSeriesOfGroup(G9);
     G1 := TwoStepCentralizer(G9);
 
-    # Check centralizer condition [G_1, gamma_6(G)] = 1 (Theorem 9.3 / Lemma 8.3).
-    # By Lemma 8.3, if [G_1, gamma_6(G)] = 1 then gamma_7(G) (order 25) centralizes
-    # every core-free subgroup S <= G_1, forcing |N_G(S) : S| >= 25 > 5 and blocking
-    # extremality. If any group had [G_1, gamma_6(G)] <> 1, we exhaustively test all
-    # conjugacy classes of subgroups S <= G_1 of order 625 via SubgroupsSolvableGroup.
+    # Check centralizer obstruction [G_1, gamma_6(G)] = 1:
+    # if [G_1, gamma_6(G)] = 1 then gamma_7(G) (order 25) centralizes every core-free
+    # subgroup S <= G_1, forcing |N_G(S) : S| >= 25 > 5 and blocking extremality.
+    # Otherwise, test all subgroup classes of order 625 in G_1 via SubgroupsSolvableGroup.
     if Size(CommutatorSubgroup(G1, L[6])) = 1 then
       c72_zero_count := c72_zero_count + 1;
     else
@@ -147,6 +151,9 @@ RunClassifyExtreme5 := function()
 
   Print("Order 5^9 groups with [G_1, gamma_6] = 1 (c_{7,2} = 0): ", c72_zero_count, " / ", Length(current), "\n");
   Print("Order 5^9 extreme groups: ", Length(ext9), " classes\n\n");
+  if Length(cap7) <> 1 or Length(current) <> 141 or c72_zero_count <> 141 or Length(ext9) <> 0 then
+    Error("Order 5^9 classification count mismatch!");
+  fi;
 
   Print("====================================================================\n");
   Print("CLASSIFICATION SUMMARY ACROSS ALL ORDERS (p = 5)\n");
@@ -155,9 +162,7 @@ RunClassifyExtreme5 := function()
   Print("Order 5^5:  1 capable extreme class (E_5 =~ G(5,5), f = 521, class 4, dl 2, exp 5)\n");
   Print("Order 5^7: 24 extreme classes out of 70 (f = 13021, class 6, dl 3, exp 25)\n");
   Print("Order 5^9:  0 extreme classes out of 141 (Universal Depth-2 Cutoff)\n");
-  if SHOW_TIMINGS then
-    Print("Total runtime: ", Runtime() - t_start, " ms\n");
-  fi;
+  PrintTimingIfEnabled();
   Print("====================================================================\n");
 end;
 

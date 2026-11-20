@@ -1,7 +1,10 @@
 # klg_lib.g
 # Library functions for Kovacs-Leedham-Green (KLG) positive Witt matrix groups
-# G(p, m) inside UT(m+1, p), conversion to polycyclic presentation (PcGroup),
-# and fast computation of the fixed-point union size f(G, H) = |\bigcup_{g in G} H^g|.
+# G(p, m) inside UT(m+1, p) and conversion to polycyclic presentation (PcGroup).
+
+if not IsBound(KLG_LIB_LOADED) then
+
+Read("lib/extreme_lib.g");
 
 # Truncated exponential series sum_{k=0}^{p-1} u^k / k! for a nilpotent matrix u with u^p = 0.
 ExpNil := function(u, p)
@@ -66,43 +69,5 @@ KLGpc := function(p, m)
   return GroupByRwsNC(coll);
 end;
 
-# Compute f(G, H) = |\bigcup_{g in G} H^g|, the number of elements of G fixing at least
-# one point in the coset action of G on G/H, as the sum of sizes of the distinct
-# G-conjugacy classes intersecting H.
-#
-# Implementation note on deduplicating G-conjugacy classes:
-# - For |G| <= 5^9, H may be abelian of order 625 (up to 625 classes in H), while
-#   conjugacy classes in G are small, so sorting via Set(...) (which orders classes
-#   by RepresentativeSmallest) is fast and O(k log k).
-# - For |G| > 5^9 (e.g. |G| = 7^9 = 40,353,607), non-central G-classes have size up to
-#   7^7 = 823,543, making RepresentativeSmallest expensive (~200 ms/class), whereas
-#   the non-abelian stabilizer H of order 7^4 has only 97 conjugacy classes. Testing
-#   class membership (r in pair[1]) among classes of matching size avoids
-#   RepresentativeSmallest and is >30x faster at 7^9.
-UltraFastF := function(G, H)
-  local reps, kept, r, cc, sz;
-  reps := List(ConjugacyClasses(H), Representative);
-  if Size(G) <= 5^9 then
-    return Sum(Set(List(reps, r -> ConjugacyClass(G, r))), Size);
-  fi;
-  kept := [];
-  for r in reps do
-    cc := ConjugacyClass(G, r);
-    sz := Size(cc);
-    if not ForAny(kept, pair -> pair[2] = sz and r in pair[1]) then
-      Add(kept, [cc, sz]);
-    fi;
-  od;
-  return Sum(kept, pair -> pair[2]);
-end;
-
-# Two-step centralizer P_1(G) = G_1 = C_G(gamma_2(G) / gamma_4(G)) of a maximal-class p-group G.
-TwoStepCentralizer := function(G)
-  local L, pi;
-  L := LowerCentralSeriesOfGroup(G);
-  pi := NaturalHomomorphismByNormalSubgroup(G, L[4]);
-  return PreImage(pi, Centralizer(Image(pi, G), Image(pi, L[2])));
-end;
-
-# Test whether the two-step centralizer P_1(G) is abelian (true on the coclass-1 mainline S_n).
-P1Abelian := G -> IsAbelian(TwoStepCentralizer(G));
+KLG_LIB_LOADED := true;
+fi;

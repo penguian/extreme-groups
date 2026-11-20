@@ -12,15 +12,13 @@
 # must reproduce the number of maximal-class groups of order 3^6 listed in the
 # SmallGroups library.
 
-LoadPackage("anupq");
-LoadPackage("autpgrp");
-Read("lib/klg_lib.g");
+Read("lib/extreme_lib.g");
 Read("lib/timings_lib.g");
-
-IsMaxClass := G -> NilpotencyClassOfGroup(G) = Log(Size(G), 3) - 1;
+RequirePackage("anupq");
+RequirePackage("autpgrp");
 
 # Representatives of the isomorphism classes among a list of 3-groups.
-ClassReps := function(L)
+ClassReps3 := function(L)
   local reps, G, H, new;
   reps := [];
   for G in L do
@@ -36,24 +34,6 @@ ClassReps := function(L)
   return reps;
 end;
 
-# Extreme core-free stabilizers of G, up to conjugacy.
-ExtremeStabilizers := function(G)
-  local p, N, m, n, res, c, S, T;
-  p := 3;
-  N := Size(G);
-  m := Log(N, p);
-  n := (m + 1) / 2;
-  res := [];
-  for c in ConjugacyClassesSubgroups(G) do
-    S := Representative(c);
-    if Size(S) <> p^(n-1) then continue; fi;
-    if Size(Core(G, S)) <> 1 then continue; fi;
-    T := Union(List(RightTransversal(G, Normalizer(G, S)), g -> AsSet(S^g)));
-    if (p + 1) * Length(T) = N + 1 then Add(res, S); fi;
-  od;
-  return res;
-end;
-
 RunClassifyExtreme3 := function()
   local m, mc, ext, i, G, mc6, mc5, from5, cand7, mc7, cent_ok, H, lcs, P1, ext7;
 
@@ -63,10 +43,14 @@ RunClassifyExtreme3 := function()
 
   # Orders 3^3 and 3^5 from the SmallGroups library
   for m in [3, 5] do
-    mc := Filtered([1..NrSmallGroups(3^m)], i -> IsMaxClass(SmallGroup(3^m, i)));
-    ext := Filtered(mc, i -> Length(ExtremeStabilizers(SmallGroup(3^m, i))) > 0);
+    mc := Filtered([1..NrSmallGroups(3^m)], i -> IsMaximalClassPGroup(SmallGroup(3^m, i), 3));
+    ext := Filtered(mc, i -> Length(ExtremeStabilizerClasses(SmallGroup(3^m, i), 3)) > 0);
     Print("Order 3^", m, ": ", Length(mc), " maximal-class groups, ", Length(ext),
           " extreme; SmallGroup ids ", ext, "\n");
+    if (m = 3 and (Length(mc) <> 2 or Length(ext) <> 2 or ext <> [ 3, 4 ]))
+       or (m = 5 and (Length(mc) <> 6 or Length(ext) <> 3 or ext <> [ 28, 29, 30 ])) then
+      Error("Unexpected SmallGroups extreme count at 3^", m);
+    fi;
     for i in ext do
       G := SmallGroup(3^m, i);
       Print("   SmallGroup(", 3^m, ",", i, "): derived length ", DerivedLength(G),
@@ -75,24 +59,27 @@ RunClassifyExtreme3 := function()
   od;
 
   # Order 3^6 from the library, and validation of the ANUPQ chain from 3^5
-  mc6 := List(Filtered([1..NrSmallGroups(3^6)], i -> IsMaxClass(SmallGroup(3^6, i))),
+  mc6 := List(Filtered([1..NrSmallGroups(3^6)], i -> IsMaximalClassPGroup(SmallGroup(3^6, i), 3)),
               i -> SmallGroup(3^6, i));
-  mc5 := List(Filtered([1..NrSmallGroups(3^5)], i -> IsMaxClass(SmallGroup(3^5, i))),
+  mc5 := List(Filtered([1..NrSmallGroups(3^5)], i -> IsMaximalClassPGroup(SmallGroup(3^5, i), 3)),
               i -> SmallGroup(3^5, i));
   from5 := [];
   for G in mc5 do
-    Append(from5, Filtered(PqDescendants(G : StepSize := 1), IsMaxClass));
+    Append(from5, Filtered(PqDescendants(G : StepSize := 1), H -> IsMaximalClassPGroup(H, 3)));
   od;
-  from5 := ClassReps(from5);
+  from5 := ClassReps3(from5);
   Print("Order 3^6: ", Length(mc6), " maximal-class groups in SmallGroups; ",
         Length(from5), " from the ANUPQ chain starting at order 3^5\n");
+  if Length(mc6) <> 7 or Length(from5) <> 7 then
+    Error("Order 3^6 maximal-class count mismatch!");
+  fi;
 
   # Order 3^7 via ANUPQ from all maximal-class groups of order 3^6
   cand7 := [];
   for G in mc6 do
-    Append(cand7, Filtered(PqDescendants(G : StepSize := 1), IsMaxClass));
+    Append(cand7, Filtered(PqDescendants(G : StepSize := 1), H -> IsMaximalClassPGroup(H, 3)));
   od;
-  mc7 := ClassReps(cand7);
+  mc7 := ClassReps3(cand7);
   Print("Order 3^7: ", Length(mc7), " maximal-class groups\n");
   cent_ok := 0;
   for H in mc7 do
@@ -103,15 +90,16 @@ RunClassifyExtreme3 := function()
       cent_ok := cent_ok + 1;
     fi;
   od;
-  Print("Order 3^7 groups satisfying [P_2, P_2] = 1 and [P_1, P_3] = [P_1, P_4] = 1 (Theorem 9.3): ",
+  Print("Order 3^7 groups satisfying [P_2, P_2] = 1 and [P_1, P_3] = [P_1, P_4] = 1 (centralizer obstruction): ",
         cent_ok, " / ", Length(mc7), "\n");
-  ext7 := Filtered(mc7, H -> Length(ExtremeStabilizers(H)) > 0);
+  ext7 := Filtered(mc7, H -> Length(ExtremeStabilizerClasses(H, 3)) > 0);
   Print("Order 3^7: ", Length(ext7), " extreme maximal-class groups\n");
-  Print("By Lemma K0 (an extreme group of order p^m has an extreme quotient of order p^(m-2)),\n");
+  Print("By the inductive quotient property (an extreme group of order p^m has an extreme quotient of order p^(m-2)),\n");
   Print("none exists at order 3^m for any odd m >= 7 if none exists at 3^7.\n");
-  if SHOW_TIMINGS then
-    Print("Total runtime: ", Runtime() - t_script_start, " ms\n");
+  if Length(mc7) <> 6 or cent_ok <> 6 or Length(ext7) <> 0 then
+    Error("Order 3^7 maximal-class verification failed!");
   fi;
+  PrintTimingIfEnabled();
   Print("====================================================================\n");
 end;
 

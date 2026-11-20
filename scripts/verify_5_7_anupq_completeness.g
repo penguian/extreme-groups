@@ -1,15 +1,15 @@
-# verify_anupq_completeness.g
-# Certified verification that the 1982 parametric family contains EVERY descendant
-# of E_5 of order 5^7 and nilpotency class 6.
+# verify_5_7_anupq_completeness.g
+# Certified verification via ANUPQ that the parametric order-5^7 family G(alpha)
+# contains EVERY descendant of E_5 of order 5^7 and nilpotency class 6.
 
-LoadPackage("anupq");
 Read("lib/iso_orbits_lib.g");
 Read("lib/timings_lib.g");
+RequirePackage("anupq");
 
 RunVerifyAnupqCompleteness := function()
   local F, x1, x2, x3, x4, x5, rels, Q, hom, G, desc, c6, matched_alphas,
         i, d, pcgs, L, G1, g2, cs, y2s, found, r, y2, b,
-        lines, orbits, l, p, which_class, a, idx;
+        isoRecs, orbits, which_class, a, idx;
 
   Print("=== Constructing base group E_5 ===\n");
   F := FreeGroup("x1", "x2", "x3", "x4", "x5");
@@ -29,7 +29,7 @@ RunVerifyAnupqCompleteness := function()
   c6 := Filtered(desc, d -> Size(d) = 78125 and NilpotencyClassOfGroup(d) = 6);
   Print("Total descendants of order 5^7 and class 6 from ANUPQ: ", Length(c6), "\n");
 
-  Print("=== Fitting ANUPQ descendants to the 1982 parametric family ===\n");
+  Print("=== Fitting ANUPQ descendants to the parametric order-5^7 family ===\n");
   matched_alphas := [];
   for i in [1..Length(c6)] do
     d := c6[i];
@@ -55,17 +55,11 @@ RunVerifyAnupqCompleteness := function()
       Error("c6[", i, "] could not be fitted to family pcp!");
     fi;
   od;
-  Print("All ", Length(matched_alphas), " groups from ANUPQ fitted to 1982 family!\n");
+  Print("All ", Length(matched_alphas), " groups from ANUPQ fitted to parametric family!\n");
 
   Print("=== Matching fitted alphas to the 70 isomorphism classes ===\n");
-  lines := ReadAll(InputTextFile("scripts/iso_classes.txt"));
-  lines := SplitString(lines, "\n");
-  lines := Filtered(lines, l -> Length(l) > 0);
-  orbits := [];
-  for l in lines do
-    p := SplitString(l, ";");
-    Add(orbits, EvalString(p[6]));
-  od;
+  isoRecs := ReadIsoClasses57("scripts/iso_classes.txt");
+  orbits := List(isoRecs, recItem -> recItem.orbit);
 
   which_class := [];
   for a in matched_alphas do
@@ -74,16 +68,14 @@ RunVerifyAnupqCompleteness := function()
     Add(which_class, idx);
   od;
 
-  if Length(orbits) = 0 or Length(c6) <> Length(orbits) or
+  if Length(orbits) <> 70 or Length(c6) <> Length(orbits) or
      Length(which_class) <> Length(orbits) or Set(which_class) <> [1..Length(orbits)] then
-    Error("ANUPQ descendants did not biject onto the 1982 isomorphism classes!");
+    Error("ANUPQ descendants did not biject onto the 70 isomorphism classes!");
   fi;
   Print("Matched classes count: ", Length(which_class), "\n");
-  Print("Unique 1982 isomorphism classes matched: ", Length(Set(which_class)), " of ", Length(orbits), "\n");
-  Print("CONCLUSION: The 1982 parametric family contains EVERY descendant of E_5 of order 5^7 and class 6.\n");
-  if SHOW_TIMINGS then
-    Print("Total runtime: ", Runtime() - t_script_start, " ms\n");
-  fi;
+  Print("Unique isomorphism classes matched: ", Length(Set(which_class)), " of ", Length(orbits), "\n");
+  Print("CONCLUSION: The parametric order-5^7 family contains EVERY descendant of E_5 of order 5^7 and class 6.\n");
+  PrintTimingIfEnabled();
 end;
 
 RunVerifyAnupqCompleteness();

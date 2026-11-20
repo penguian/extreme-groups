@@ -1,17 +1,14 @@
-# audit_paper_assertions.g
-# Deterministic GAP 4.15.1 + ANUPQ 3.3.3 verification script auditing prose, side-remark,
-# minimal faithful degree, table, and Appendix A dictionary assertions in
-# "Revisiting extreme transitive p-groups of maximal class".
+# verify_auxiliary_assertions.g
+# Deterministic GAP + ANUPQ verification script checking structural examples,
+# subgroup lattice counts, minimal faithful degrees, non-extreme presentation types,
+# Type-I-only tuples, sector mu_3 = 6*lambda (d7[85]), and modular Witt basis rescaling.
 #
 # Usage (from repository root):
-#   gap -q scripts/audit_paper_assertions.g
+#   gap -q scripts/verify_auxiliary_assertions.g
 
-if LoadPackage("anupq") = fail then
-  Error("The ANUPQ package is required to run scripts/audit_paper_assertions.g");
-fi;
-Read("lib/timings_lib.g");
-Read("lib/alpha_lib.g");
 Read("lib/iso_orbits_lib.g");
+Read("lib/timings_lib.g");
+RequirePackage("anupq");
 
 # Check 1(a): Affine extreme group x |-> a*x + b over Z/p^n Z (a === 1 mod p).
 CheckAffineZpn := function(p, n)
@@ -104,8 +101,8 @@ CheckE5LatticeAndStructure := function()
   muE5 := Minimum(List(coreFreeE5, cl -> Index(E5, Representative(cl))));
   extClassesE5 := Filtered(ccsE5, cl -> Size(Representative(cl)) = 25 and Size(Core(E5, Representative(cl))) = 1
                                         and 6 * UltraFastF(E5, Representative(cl)) = Size(E5) + 1);
-  Print("E_5 subgroup classes: ", Length(ccsE5), " (paper: 51); total subgroups: ", totSubsE5,
-        " (paper: 1151); mu(E_5) = ", muE5, " (paper: 125)\n");
+  Print("E_5 subgroup classes: ", Length(ccsE5), " (expected: 51); total subgroups: ", totSubsE5,
+        " (expected: 1151); mu(E_5) = ", muE5, " (expected: 125)\n");
   Print("E_5 extreme classes: ", Length(extClassesE5), " of size ", List(extClassesE5, Size),
         " (total ", Sum(extClassesE5, Size), ")\n");
   if Length(ccsE5) <> 51 or totSubsE5 <> 1151 or muE5 <> 125
@@ -141,8 +138,9 @@ CheckE5LatticeAndStructure := function()
   fi;
 end;
 
-# Check 3: Section 3 literal 1982 NICE Clause (2) counterexample at k >= j + 2.
-CheckNiceClause2Counterexample := function()
+# Check 3: Distinct conjugates of H_2 in an extreme order-5^7 group do not intersect strictly in H_1:
+# pairs of elements from distinct G_3-blocks can intersect in 1 rather than H_1 (order 5).
+CheckNonAdjacentConjugateIntersectionsH2 := function()
   local Gext, xG, H2_true, conjsH2, interSizes;
   Gext := DescGroup([0,1,2,4,0,0]);
   xG := Pcgs(Gext);
@@ -152,50 +150,39 @@ CheckNiceClause2Counterexample := function()
                                p -> Size(Intersection(p[1], p[2]))));
   Print("H_2 conjugates count: ", Length(conjsH2), " (25); pairwise distinct intersection sizes: ", interSizes, "\n");
   if Length(conjsH2) <> 25 or interSizes <> [ [ 1, 500 ], [ 5, 100 ] ] then
-    Error("Literal NICE Clause (2) check mismatch!");
+    Error("Non-adjacent conjugate intersection check for H_2 failed!");
   fi;
 end;
 
-# Check 4: Section 5 Cases 2 & 3, Table 1 invariants & |Aut G|, and Section 7.2 nine Type-I-only tuples.
-CheckOrder57CasesTable1AndNineTuples := function()
-  local Gcase2, xc2, Sc2, normC2, fCase2,
-        Gcase3, xc3, Sc3, interC3, interC3ok, idxNormC3, fCase3,
-        lines, isoRecs, l, s, a3, sub, autSizes, ccCounts, dlSet, expSet, zSet, expCC, r,
+# Check 4: Order-5^7 non-extreme Type II & III examples, class invariants & |Aut G|, and 9 Type-I-only tuples.
+CheckOrder57NonExtremeTypesAndTable := function()
+  local Gtype2, xc2, Sc2, normT2, fType2,
+        Gtype3, xc3, Sc3, interT3, interT3ok, idxNormT3, fType3,
+        isoRecs, a3, sub, autSizes, ccCounts, dlSet, expSet, zSet, expCC, r,
         nine, nineOrbIdx, t, k0, hasTypeIV;
-  Gcase2 := DescGroup([0,4,0,1,0,1]);
-  xc2 := Pcgs(Gcase2); Sc2 := Subgroup(Gcase2, [xc2[2], xc2[4]]);
-  normC2 := Size(Normalizer(Gcase2, Sc2));
-  fCase2 := UltraFastF(Gcase2, Sc2);
-  Print("Case 2: |S_0|=", Size(Sc2), " |N_G(S_0)|=", normC2,
-        " f=", fCase2, " (paper: 3021)\n");
-  Gcase3 := DescGroup([0,0,1,0,0,0]);
-  xc3 := Pcgs(Gcase3); Sc3 := Subgroup(Gcase3, [xc3[2], xc3[4]]);
-  interC3 := Intersection(Sc3, Sc3^xc3[5]);
-  interC3ok := interC3 = Subgroup(Gcase3, [xc3[4], xc3[6]]);
-  idxNormC3 := Index(Gcase3, Normalizer(Gcase3, interC3));
-  fCase3 := UltraFastF(Gcase3, Sc3);
-  Print("Case 3: |S_0|=", Size(Sc3), " S cap S^(x_5) = <x_4,x_6>: ", interC3ok,
-        " [G : N(S cap S^x5)]=", idxNormC3,
-        " f=", fCase3, " (paper: 12621, deficit=", 13021 - fCase3, ")\n");
-  if Size(Sc2) <> 125 or normC2 <> 3125 or fCase2 <> 3021
-     or Size(Sc3) <> 125 or not interC3ok or idxNormC3 <> 5 or fCase3 <> 12621 then
-    Error("Case 2 or Case 3 structural or fixed-point count mismatch!");
+
+  Gtype2 := DescGroup([0,4,0,1,0,1]);
+  xc2 := Pcgs(Gtype2); Sc2 := Subgroup(Gtype2, [xc2[2], xc2[4]]);
+  normT2 := Size(Normalizer(Gtype2, Sc2));
+  fType2 := UltraFastF(Gtype2, Sc2);
+  Print("Type II: |S_0|=", Size(Sc2), " |N_G(S_0)|=", normT2,
+        " f=", fType2, " (expected: 3021)\n");
+
+  Gtype3 := DescGroup([0,0,1,0,0,0]);
+  xc3 := Pcgs(Gtype3); Sc3 := Subgroup(Gtype3, [xc3[2], xc3[4]]);
+  interT3 := Intersection(Sc3, Sc3^xc3[5]);
+  interT3ok := interT3 = Subgroup(Gtype3, [xc3[4], xc3[6]]);
+  idxNormT3 := Index(Gtype3, Normalizer(Gtype3, interT3));
+  fType3 := UltraFastF(Gtype3, Sc3);
+  Print("Type III: |S_0|=", Size(Sc3), " S cap S^(x_5) = <x_4,x_6>: ", interT3ok,
+        " [G : N(S cap S^x5)]=", idxNormT3,
+        " f=", fType3, " (expected: 12621, deficit=", 13021 - fType3, ")\n");
+  if Size(Sc2) <> 125 or normT2 <> 3125 or fType2 <> 3021
+     or Size(Sc3) <> 125 or not interT3ok or idxNormT3 <> 5 or fType3 <> 12621 then
+    Error("Type II or Type III structural or fixed-point count mismatch!");
   fi;
 
-  lines := InputTextFile("scripts/iso_classes.txt");
-  if lines = fail then
-    Error("Could not open scripts/iso_classes.txt (run from repository root after scripts/iso_orbits_classify.g)");
-  fi;
-  isoRecs := [];
-  while not IsEndOfStream(lines) do
-    l := ReadLine(lines);
-    if l <> fail then
-      s := SplitString(Chomp(l), ";");
-      Add(isoRecs, rec(idx := EvalString(s[1]), rep := EvalString(s[2]),
-                       aut := EvalString(s[5]), orb := EvalString(s[6])));
-    fi;
-  od;
-  CloseStream(lines);
+  isoRecs := ReadIsoClasses57("scripts/iso_classes.txt");
   Print("Loaded iso_classes.txt records: ", Length(isoRecs), "\n");
   if Length(isoRecs) <> 70 then
     Error("Expected 70 isomorphism class records in scripts/iso_classes.txt!");
@@ -214,14 +201,14 @@ CheckOrder57CasesTable1AndNineTuples := function()
       if Length(sub) <> 38 or dlSet <> [ 2 ] or expSet <> [ 25 ] or zSet <> [ 5 ]
          or ccCounts <> [ 173 ]
          or autSizes <> [ [ 9765625, 25 ], [ 19531250, 12 ], [ 39062500, 1 ] ] then
-        Error("Table 1 / Section 7.1 invariant mismatch at alpha_3 = 1!");
+        Error("Order-5^7 class invariant mismatch at alpha_3 = 1!");
       fi;
     else
       if a3 = 0 then expCC := [ 173 ]; else expCC := [ 77 ]; fi;
       if Length(sub) <> 8 or dlSet <> [ 3 ] or expSet <> [ 25 ] or zSet <> [ 5 ]
          or ccCounts <> expCC
          or autSizes <> [ [ 1953125, 5 ], [ 3906250, 2 ], [ 7812500, 1 ] ] then
-        Error("Table 1 / Section 7.1 invariant mismatch at alpha_3 = ", a3);
+        Error("Order-5^7 class invariant mismatch at alpha_3 = ", a3);
       fi;
     fi;
   od;
@@ -242,20 +229,20 @@ CheckOrder57CasesTable1AndNineTuples := function()
   for t in nine do
     if not IsConfluent(DescColl(t)) then Error("Tuple not confluent: ", t); fi;
     k0 := ((t[2] + t[6]) * (t[3]^3)) mod 5;
-    r := First(isoRecs, x -> t in x.orb);
+    r := First(isoRecs, x -> t in x.orbit);
     if r = fail then Error("Tuple not found in iso_classes.txt orbits: ", t); fi;
-    hasTypeIV := ForAny(r.orb, u -> ((u[2] + u[6]) mod 5) = 0);
+    hasTypeIV := ForAny(r.orbit, u -> ((u[2] + u[6]) mod 5) = 0);
     if k0 <> 3 or hasTypeIV then Error("Nine-tuple check failed on ", t); fi;
     Add(nineOrbIdx, r.idx);
   od;
-  Print("Section 7.2 nine tuples: all confluent, all k_0=3, all Type-I-only, distinct classes=",
+  Print("Nine Type-I-only tuples: all confluent, all k_0=3, all Type-I-only, distinct classes=",
         Length(Set(nineOrbIdx)), " (expected 9)\n");
   if Length(Set(nineOrbIdx)) <> 9 then
-    Error("Section 7.2 nine tuples did not map to 9 distinct isomorphism classes!");
+    Error("Nine Type-I-only tuples did not map to 9 distinct isomorphism classes!");
   fi;
 end;
 
-# Check 5: Section 8.3 sector mu_3 = 6*lambda (d7[85]) 409 non-extreme descendants at order 7^9.
+# Check 5: Order-7^9 sector mu_3 = 6*lambda (d7[85]): 409 non-extreme descendants with [P_1, P_6] = 1.
 CheckOrder79SectorMu3Eq6 := function()
   local G73, d74, d75, d76, d77, g85, x85, mu3_85, cap8_85, d9_85, allP1P6Triv;
   G73 := ExtraspecialGroup(7^3, 7);
@@ -276,13 +263,13 @@ CheckOrder79SectorMu3Eq6 := function()
     return IsTrivial(CommutatorSubgroup(P1g, L[6]));
   end);
   Print("d7[85]: mu_3=", mu3_85, " |cap8|=", Length(cap8_85),
-        " |d9|=", Length(d9_85), " (paper: 409); all [P_1,P_6]=1: ", allP1P6Triv, "\n");
+        " |d9|=", Length(d9_85), " (expected: 409); all [P_1,P_6]=1: ", allP1P6Triv, "\n");
   if mu3_85 <> 6 or Length(cap8_85) <> 2 or Length(d9_85) <> 409 or not allP1P6Triv then
     Error("d7[85] 409 check failed!");
   fi;
 end;
 
-# Check 6: Appendix A(2) GAP SimpleLieAlgebra("W", [1], GF(p)) divided-power basis rescaling.
+# Check 6: GAP SimpleLieAlgebra("W", [1], GF(p)) divided-power basis rescaling to positive Witt brackets.
 CheckWittDividedPowerBasis := function(p)
   local W, b, u, okPlus, i, j;
   W := SimpleLieAlgebra("W", [1], GF(p));
@@ -303,35 +290,33 @@ CheckWittDividedPowerBasis := function(p)
   fi;
 end;
 
-RunAuditPaperAssertions := function()
+RunVerifyAuxiliaryAssertions := function()
   local pair, p;
-  Print("=== CHECK 1: Section 1 & Appendix A(2) Affine Chain-Ring Groups ===\n");
+  Print("=== CHECK 1: Affine Chain-Ring Extreme Groups ===\n");
   for pair in [[3,2],[3,3],[3,4],[5,2],[5,3]] do
     CheckAffineZpn(pair[1], pair[2]);
     CheckAffineFpY(pair[1], pair[2]);
   od;
 
-  Print("\n=== CHECK 2: Section 1, Section 2 mu(G), & Section 4 E_5 Lattice and Structure ===\n");
+  Print("\n=== CHECK 2: Base Group E_5 Lattice, mu(E_5), and Stabilizer Orbits ===\n");
   CheckE5LatticeAndStructure();
 
-  Print("\n=== CHECK 3: Section 3 Literal 1982 NICE Clause (2) Counterexample for k >= j+2 ===\n");
-  CheckNiceClause2Counterexample();
+  Print("\n=== CHECK 3: Non-Adjacent Conjugate Intersections for H_2 at Order 5^7 ===\n");
+  CheckNonAdjacentConjugateIntersectionsH2();
 
-  Print("\n=== CHECK 4: Section 5 Cases 2 & 3, Table 1 |Aut G|, and Section 7.2 Nine Tuples ===\n");
-  CheckOrder57CasesTable1AndNineTuples();
+  Print("\n=== CHECK 4: Order-5^7 Non-Extreme Types II/III, Class Invariants, and Nine Type-I-Only Tuples ===\n");
+  CheckOrder57NonExtremeTypesAndTable();
 
-  Print("\n=== CHECK 5: Section 8.3 Sector mu_3 = 6*lambda (d7[85]) 409 Non-Extreme Descendants at 7^9 ===\n");
+  Print("\n=== CHECK 5: Order-7^9 Sector mu_3 = 6*lambda (d7[85]) 409 Non-Extreme Descendants ===\n");
   CheckOrder79SectorMu3Eq6();
 
-  Print("\n=== CHECK 6: Appendix A(2) GAP SimpleLieAlgebra(\"W\", [1], GF(p)) Divided-Power Basis ===\n");
+  Print("\n=== CHECK 6: GAP SimpleLieAlgebra(\"W\", [1], GF(p)) Divided-Power Witt Basis ===\n");
   for p in [7, 11] do
     CheckWittDividedPowerBasis(p);
   od;
 
-  if SHOW_TIMINGS then
-    Print("Total runtime: ", Runtime() - t_script_start, " ms\n");
-  fi;
+  PrintTimingIfEnabled();
 end;
 
-RunAuditPaperAssertions();
+RunVerifyAuxiliaryAssertions();
 QUIT;

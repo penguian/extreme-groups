@@ -1,11 +1,11 @@
-# verify_fixed_point_layers.g
-# For all 375 presentations with alpha_3 in {2, 3, 4}: S = <x_4, x_2 * x_3^{k_0}>,
-# k_0 = (alpha_2 + alpha_6) / alpha_3 mod 5.
-# Check the fixed-point distribution of the elements of S in the action on G / S:
+# verify_5_7_fixed_point_layers.g
+# For all 375 consistent order-5^7 presentations with alpha_3 in {2, 3, 4},
+# let S = <x_4, x_2 * x_3^{k_0}> where k_0 = (alpha_2 + alpha_6) / alpha_3 mod 5.
+# Verify the fixed-point distribution of the elements of S acting on G/S:
 #   1 element fixing 625, 4 fixing 125 (S_1 = <c>), 20 fixing 25 (S_2 \ S_1, S_2 = <x_4, c>),
-#   100 fixing 5 (S \ S_2), and hence f = 13021.
+#   100 fixing 5 (S \ S_2), yielding f(G, S) = 13021.
 
-Read("lib/alpha_lib.g");
+Read("lib/param_5_7_lib.g");
 Read("lib/timings_lib.g");
 
 CheckFixedPointLayersOne := function(a)
@@ -30,7 +30,7 @@ CheckFixedPointLayersOne := function(a)
           fi;
         end);
   f := UltraFastF(G, S);
-  return ok and f = 13021;
+  return ok and f = ExtremeTargetF(5, 7);
 end;
 
 RunVerifyFixedPointLayers := function()
@@ -39,13 +39,11 @@ RunVerifyFixedPointLayers := function()
   Print("presentations: ", Length(alphas), "\n");
   bad := Filtered(alphas, a -> not CheckFixedPointLayersOne(a));
   Print("failures: ", Length(bad), "\n");
-  if Length(bad) > 0 then
+  if Length(alphas) <> 375 or Length(bad) > 0 then
     Error("Fixed-point layer verification failed on ", Length(bad), " presentations!");
   fi;
   Print("finished\n");
-  if SHOW_TIMINGS then
-    Print("Total runtime: ", Runtime() - t_script_start, " ms\n");
-  fi;
+  PrintTimingIfEnabled();
 end;
 
 RunVerifyFixedPointLayers();

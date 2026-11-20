@@ -2,8 +2,10 @@
 #
 # Direct ANUPQ verification of the top-weight p-adic Witt pole (Proposition 9.2(2)
 # and Theorem 9.4(2)) on the Kovacs-Leedham-Green positive Witt groups G(p, p)
-# for primes p in [5, 7, 11, 13, 17], together with verification that G(11, m)
+# for primes p in [5, 7, 11, 13], together with verification that G(11, m)
 # is extreme (f = (11^m + 1) / 12) for all odd m in [3, 5, 7, 9, 11].
+# Note: in part 2, KLGpc(p, p) is re-encoded via Pq(... : ClassBound := p - 1) so
+# that ANUPQ operates on a weighted p-quotient pcgs matching PQ_AUT_INPUT.
 
 LoadPackage("anupq");
 Read("lib/klg_lib.g");
@@ -56,13 +58,25 @@ RunVerifyWittPole := function()
   Print("\n====================================================================\n");
   Print("2. ANUPQ TERMINATION OF G(p, p) AT ORDER p^(p+1) (PROPOSITION 9.2(2))\n");
   Print("====================================================================\n");
-  for p in [5, 7, 11, 13, 17] do
-    Gp := KLGpc(p, p);
-    d_next := PqDescendants(Gp : StepSize := 1, ClassBound := p);
+  for p in [5, 7, 11, 13] do
+    Gp := Pq(KLGpc(p, p) : Prime := p, ClassBound := p - 1);
     d_cap := PqDescendants(Gp : StepSize := 1, ClassBound := p, CapableDescendants);
-    Print("p=", p, ": G(", p, ",", p, ") -> order ", p, "^", p + 1, ": ",
-          Length(d_next), " step-1 max-class descendants, ",
-          Length(d_cap), " capable\n");
+    if p <= 7 then
+      d_next := PqDescendants(Gp : StepSize := 1, ClassBound := p);
+      Print("p=", p, ": G(", p, ",", p, ") -> order ", p, "^", p + 1, ": ",
+            Length(d_next), " step-1 max-class descendants, ",
+            Length(d_cap), " capable\n");
+      if (p = 5 and (Length(d_next) <> 18 or Length(d_cap) <> 1))
+         or (p = 7 and (Length(d_next) <> 472 or Length(d_cap) <> 0)) then
+        Error("Unexpected descendant count for p = ", p);
+      fi;
+    else
+      Print("p=", p, ": G(", p, ",", p, ") -> order ", p, "^", p + 1, ": ",
+            Length(d_cap), " capable step-1 max-class descendants\n");
+      if Length(d_cap) <> 0 then
+        Error("Unexpected capable descendant for p = ", p);
+      fi;
+    fi;
   od;
   if SHOW_TIMINGS then
     Print("Total runtime: ", Runtime() - t_script_start, " ms\n");

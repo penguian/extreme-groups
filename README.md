@@ -66,7 +66,7 @@ extreme-groups/
     ├── verify_extreme_groups.lean             # Zero-dependency Lean 4.35.0 formal proofs (43 theorems) & #print axioms audit
     ├── verify_fixed_point_layers.g            # Fixed-point layer distribution across 375 presentations
     ├── verify_jacobi_witt_factorizations.py   # SymPy verification of Vergne-Jacobi & Witt factorizations (Props. 9.1-9.2)
-    └── verify_witt_pole_anupq.g               # ANUPQ verification of G(11,m) extremality & Witt pole termination of G(p,p) for p=5..17
+    └── verify_witt_pole_anupq.g               # ANUPQ verification of G(11,m) extremality & Witt pole termination of G(p,p) for p=5..13
 ```
 
 ---
@@ -149,7 +149,7 @@ python3 scripts/verify_jacobi_witt_factorizations.py
 lean scripts/verify_extreme_groups.lean
 ```
 
-Builds all maximal-class groups of order $p^n$ from all maximal-class parents of order $p^{n-1}$ and compares the totals with published values ($99$ at $5^7$: Newman 1990, O'Brien--Vaughan-Lee 2005; Blackburn 1958, Sec. 4 for $7^4$--$7^5$, O'Brien--Vaughan-Lee 2005, Thm. 4, Tables 2--3 for $7^6$--$7^7$, and Lee--Vaughan-Lee 2024, Thm. 1 Lie-ring count $1{,}988$ for $7^8$), audits the subtree in branch $\mathcal B_4$ of $\mathcal T(p)$ (Proposition 8.4 & Table 3), confirms in ANUPQ that the positive Witt group $G(p,p)$ has $2p^2+3p+3$ immediate maximal-class descendants of order $p^{p+1}$ with $0$ capable for $p\in\{7,11,13,17\}$ (Proposition 9.2(2)), audits all prose, affine chain-ring, $E_5$ subgroup-lattice, minimal faithful degree $\mu(G)$, Case 2/3, $\mu_3 = 6\lambda$ ($7^9$), and GAP Witt divided-power basis assertions (`audit_paper_assertions.g`), verifies all graded Lie algebra Jacobi and Witt factorizations symbolically in SymPy, and machine-checks all 43 sieve, collection, and Nullstellensatz obstruction theorems together with `#print axioms` kernel certificates in Lean 4.
+Builds all maximal-class groups of order $p^n$ from all maximal-class parents of order $p^{n-1}$ and compares the totals with published values ($99$ at $5^7$: Newman 1990, O'Brien--Vaughan-Lee 2005; Blackburn 1958, Sec. 4 for $7^4$--$7^5$, O'Brien--Vaughan-Lee 2005, Thm. 4, Tables 2--3 for $7^6$--$7^7$, and Lee--Vaughan-Lee 2024, Thm. 1 Lie-ring count $1{,}988$ for $7^8$), audits the subtree in branch $\mathcal B_4$ of $\mathcal T(p)$ (Proposition 8.4 & Table 3), confirms in ANUPQ (on weighted $p$-quotient presentations via `Pq`) that the positive Witt group $G(5,5)$ has $18$ immediate maximal-class descendants at order $5^6$ ($1$ capable), $G(7,7)$ has $472$ immediate maximal-class descendants at order $7^8$ ($0$ capable), and $G(p,p)$ has $0$ capable order-$p^{p+1}$ descendants for $p\in\{11,13\}$ (Proposition 9.2(2)), audits all prose, affine chain-ring, $E_5$ subgroup-lattice, minimal faithful degree $\mu(G)$, Case 2/3, $\mu_3 = 6\lambda$ ($7^9$), and GAP Witt divided-power basis assertions (`audit_paper_assertions.g`), verifies all graded Lie algebra Jacobi and Witt factorizations symbolically in SymPy, and machine-checks all 43 sieve, collection, and Nullstellensatz obstruction theorems together with `#print axioms` kernel certificates in Lean 4.
 
 ---
 

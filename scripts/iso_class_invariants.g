@@ -2,20 +2,11 @@
 # Compute exponent, derived length, |Z(G)|, and derived series orders across all
 # 70 isomorphism class representatives of order 5^7 from scripts/iso_classes.txt.
 
-Read("lib/alpha_lib.g");
+Read("lib/iso_orbits_lib.g");
 
 RunIsoClassInvariants := function()
-  local lines, allreps, l, s, res, a, G, c;
-  lines := InputTextFile("scripts/iso_classes.txt");
-  allreps := [];
-  while not IsEndOfStream(lines) do
-    l := ReadLine(lines);
-    if l <> fail then
-      s := SplitString(Chomp(l), ";");
-      Add(allreps, EvalString(s[2]));
-    fi;
-  od;
-  CloseStream(lines);
+  local allreps, res, r, a, G, c;
+  allreps := List(ReadIsoClasses57("scripts/iso_classes.txt"), r -> r.rep);
 
   res := [];
   for a in allreps do

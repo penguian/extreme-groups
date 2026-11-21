@@ -1,4 +1,8 @@
-# Substitution matrices: row convention, basis x^1..x^n of F_p[x]/(x^{n+1}).
+# subst_lib.g
+# Polynomial substitution matrices in row convention over the basis x^1..x^n of F_p[x]/(x^{n+1}).
+
+if not IsBound(SUBST_LIB_LOADED) then
+
 SubstMat := function(p, n, s)
   local F, x, sx, M, k, pk, j, c;
   F := GF(p); x := Indeterminate(F, "x");
@@ -14,6 +18,14 @@ SubstMat := function(p, n, s)
   od;
   return M;
 end;
+
 Xk := function(n, k)
-  local s; s := List([1..n], j -> 0); s[1] := 1; s[k] := 1; return s;
+  local s;
+  s := List([1..n], j -> 0);
+  s[1] := 1;
+  s[k] := 1;
+  return s;
 end;
+
+SUBST_LIB_LOADED := true;
+fi;

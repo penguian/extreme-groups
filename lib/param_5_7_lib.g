@@ -1,6 +1,8 @@
-# alpha_lib.g
-# Library for the 1982 parametric family of order-5^7 descendants of E_5 =~ G(5, 5),
-# parameterized by alpha = [alpha_1, ..., alpha_6] in (Z/5Z)^6 (Section 5 of the paper).
+# param_5_7_lib.g
+# Library for the parametric family G(alpha) of order-5^7 maximal-class descendants
+# of E_5 =~ G(5, 5), parameterized by alpha = [alpha_1, ..., alpha_6] in (Z/5Z)^6.
+
+if not IsBound(PARAM_5_7_LIB_LOADED) then
 
 Read("lib/klg_lib.g");
 
@@ -42,7 +44,15 @@ ConsistentAlphas := function()
   return Filtered(Tuples([0..4], 6), a -> IsConfluent(DescColl(a)));
 end;
 
-# Shared worker for scripts/exhaustive_5_7/job0.g .. job5.g:
+# Presentation type (1..4, i.e. Type I..IV) of a consistent parameter tuple alpha.
+PresentationType57 := function(a)
+  if (a[2] + a[6]) mod 5 <> 0 then return 1; fi;
+  if a[3] = 0 then return 2; fi;
+  if a[4] = 0 then return 3; fi;
+  return 4;
+end;
+
+# Shared worker for scripts/exhaustive_5_7/run_slice.g:
 # For all consistent tuples cons[i] with i === rem (mod 6), lifts every conjugacy class
 # of extreme stabilizers T <= E_5 = G/V (where V = <x_6, x_7>) to its preimage P <= G,
 # enumerates all core-free maximal subgroups H < P of order 125 with |H \cap V| = 5,
@@ -93,3 +103,6 @@ RunExhaustive57Job := function(rem, outfile)
   od;
   CloseStream(out);
 end;
+
+PARAM_5_7_LIB_LOADED := true;
+fi;

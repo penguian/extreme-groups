@@ -11,4 +11,15 @@ if not IsBound(SHOW_TIMINGS) then
     (IsBound(GAPInfo.SystemEnvironment.SHOW_TIMINGS) and
      GAPInfo.SystemEnvironment.SHOW_TIMINGS in ["1", "true", "TRUE"]);
 fi;
-t_script_start := Runtime();
+
+if not IsBound(t_script_start) then
+  t_script_start := Runtime();
+fi;
+
+if not IsBound(PrintTimingIfEnabled) then
+  PrintTimingIfEnabled := function()
+    if SHOW_TIMINGS then
+      Print("Total runtime: ", Runtime() - t_script_start, " ms\n");
+    fi;
+  end;
+fi;

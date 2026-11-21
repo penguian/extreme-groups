@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Join the exact isomorphism classes (iso_classes.txt) with the exhaustive per-presentation data
-(exhaustive_5_7/all.txt); check that the invariants are constant on classes and summarise."""
+(exhaustive_5_7/all.txt); check that the invariants are constant on classes and summarize."""
 import ast
 import os
 from collections import Counter, defaultdict

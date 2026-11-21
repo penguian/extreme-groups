@@ -1,14 +1,14 @@
-# test_Sk_all.g
-# For ALL 625 consistent parameter tuples alpha, verify Lemma 6.1 and Theorem 6.2:
+# verify_5_7_stabilizer_criterion.g
+# For all 625 consistent parameter tuples alpha of the order-5^7 family G(alpha), verify:
 #  (1) [x_4, x_2 * x_3^k] = x_6 * x_7^(alpha_2 + k * alpha_4),
 #  (2) (x_2 * x_3^k)^5 = x_6^4 * x_7^(alpha_6 - k),
 #  (3) for alpha_3 <> 0, k_0 = (alpha_2 + alpha_6) / alpha_3 mod 5 gives
 #      |<x_4, x_2 * x_3^{k_0}>| = 125, and for all other k the order is 625.
 
-Read("lib/alpha_lib.g");
+Read("lib/param_5_7_lib.g");
 Read("lib/timings_lib.g");
 
-RunTestSkAll := function()
+RunVerify57StabilizerCriterion := function()
   local alphas, bad1, bad2, bad3, n3, mism, a, G, gg, pcgs, k, s1, s2, e1, e2, k0, sz;
   alphas := ConsistentAlphas();
   Print("number of consistent alphas: ", Length(alphas), "\n");
@@ -43,14 +43,12 @@ RunTestSkAll := function()
   if Length(mism) > 0 then
     Print(mism{[1..Minimum(5, Length(mism))]}, "\n");
   fi;
-  if bad1 > 0 or bad2 > 0 or bad3 > 0 or Length(mism) > 0 then
-    Error("test_Sk_all verification failed!");
+  if Length(alphas) <> 625 or n3 <> 500 or bad1 > 0 or bad2 > 0 or bad3 > 0 or Length(mism) > 0 then
+    Error("Order-5^7 stabilizer criterion verification failed!");
   fi;
   Print("finished\n");
-  if SHOW_TIMINGS then
-    Print("Total runtime: ", Runtime() - t_script_start, " ms\n");
-  fi;
+  PrintTimingIfEnabled();
 end;
 
-RunTestSkAll();
+RunVerify57StabilizerCriterion();
 QUIT;

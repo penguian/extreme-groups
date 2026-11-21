@@ -15,10 +15,9 @@
 # Z(G); hence G is an immediate (step size 1) descendant of G/Z(G), which has maximal
 # class and order p^(n-1). Descendants are filtered by class = n - 1.
 
-if LoadPackage("anupq") = fail then
-  Error("The ANUPQ package is required to run scripts/count_max_class_totals.g");
-fi;
+Read("lib/extreme_lib.g");
 Read("lib/timings_lib.g");
+RequirePackage("anupq");
 
 if not IsBound(P_TO_RUN) then P_TO_RUN := 5; fi;
 if not IsBound(N_MAX) then
@@ -46,8 +45,7 @@ PublishedMaxClassCount := function(p, n)
 end;
 
 RunCountMaxClassTotals := function(p, n_max)
-  local t0, M, n, newM, parents_with_child, nonmax, G, D, mc, sg, pub;
-  t0 := Runtime();
+  local M, n, newM, parents_with_child, nonmax, G, D, mc, sg, pub;
   Print("====================================================================\n");
   Print("TOTAL MAXIMAL-CLASS p-GROUPS, p = ", p, "\n");
   Print("====================================================================\n");
@@ -85,9 +83,7 @@ RunCountMaxClassTotals := function(p, n_max)
       Error("Maximal-class count mismatch at order ", p, "^", n);
     fi;
   od;
-  if SHOW_TIMINGS then
-    Print("Total runtime: ", Runtime() - t0, " ms\n");
-  fi;
+  PrintTimingIfEnabled();
 end;
 
 RunCountMaxClassTotals(P_TO_RUN, N_MAX);

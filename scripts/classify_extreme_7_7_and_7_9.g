@@ -31,7 +31,7 @@ RunClassifyExtreme7 := function()
         d7, target_f7, ext7, idx7, G7, x, S7, cap7_indices, cap8_by_idx7,
         c8, c8_cap, mu3, c52, surviving_cap7, target_f9, total_7_9,
         total_ext_7_9, cap8, G8, d9, branch_ok, dl_list, exp_list, idx9,
-        G9, k0, S, cur, ok, j, G9_1, x1, k0_1, f_val;
+        G9, k0, S, G9_1, x1, k0_1, f_val;
 
   Print("====================================================================\n");
   Print("CLASSIFICATION OF EXTREME 7-GROUPS OF MAXIMAL CLASS (ORDERS 7^5..7^9)\n");
@@ -41,16 +41,25 @@ RunClassifyExtreme7 := function()
   d4_all := PqDescendants(G3 : StepSize := 1);
   d4_cap := PqDescendants(G3 : StepSize := 1, CapableDescendants);
   Print("Order 7^4: ", Length(d4_all), " maximal-class groups (", Length(d4_cap), " capable)\n");
+  if Length(d4_cap) <> 1 then
+    Error("Expected 1 capable maximal-class group of order 7^4!");
+  fi;
 
   d5_all := PqDescendants(d4_cap[1] : StepSize := 1);
   d5_cap := PqDescendants(d4_cap[1] : StepSize := 1, CapableDescendants);
   Print("Order 7^5: ", Length(d5_all), " maximal-class groups (", Length(d5_cap), " capable)\n");
+  if Length(d5_cap) <> 2 or not P1Abelian(d5_cap[1]) or P1Abelian(d5_cap[2]) then
+    Error("Unexpected capable 7^5 structure!");
+  fi;
 
   # g5 = d5_cap[2] is G(7, 5) with [x_3, x_2] = x_5
   g5 := d5_cap[2];
   d6_all := PqDescendants(g5 : StepSize := 1);
   d6_cap := PqDescendants(g5 : StepSize := 1, CapableDescendants);
   Print("Order 7^6 (from G(7,5)): ", Length(d6_all), " descendants (", Length(d6_cap), " capable)\n");
+  if Length(d6_cap) <> 1 then
+    Error("Expected 1 capable B_4 descendant of order 7^6!");
+  fi;
 
   g6 := d6_cap[1];
   d7 := PqDescendants(g6 : StepSize := 1);
@@ -128,26 +137,11 @@ RunClassifyExtreme7 := function()
         k0 := UniqueStabilizerParam79(x);
 
         S := Subgroup(G9, [x[4], x[2] * x[3]^k0]);
-        if Size(S) = 2401 and not (x[9] in S) then
-          # Since Z(G9) = <x[9]> is the unique minimal normal subgroup of G9,
-          # not (x[9] in S) already implies Core(G9, S) = 1.
-          # At j = 1, S is normal in cur = Normalizer(G9, S), so Core(cur, S) = S.
-          cur := Normalizer(G9, S);
-          ok := (Size(cur) = 7^5);
-          for j in [2..4] do
-            if not ok then break; fi;
-            cur := Normalizer(G9, cur);
-            if Size(cur) <> 7^(4+j) or Size(Core(cur, S)) <> 7^(5-j) then
-              ok := false;
-              break;
-            fi;
-          od;
-          if ok then
-            branch_ok := branch_ok + 1;
-            total_ext_7_9 := total_ext_7_9 + 1;
-            Add(dl_list, DerivedLength(G9));
-            Add(exp_list, Exponent(G9));
-          fi;
+        if Size(S) = 2401 and not (x[9] in S) and VerifyExtremeTower(G9, S, 7) then
+          branch_ok := branch_ok + 1;
+          total_ext_7_9 := total_ext_7_9 + 1;
+          Add(dl_list, DerivedLength(G9));
+          Add(exp_list, Exponent(G9));
         fi;
       od;
 

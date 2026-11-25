@@ -37,7 +37,7 @@ end;
 
 RunBranchDepthAudit := function()
   local r, E5, d6, cap6, g6, d7, ext7, ext7NonAb, d7_kids, cap7, capDescG6, lvl, kids,
-        n, cand, cand_kids, cp_idx, cp, counts5, counts7, G75, G3, S4, d5, ext5;
+        n, cand, cand_kids, cp_idx, cp, counts5, counts7, G75, G3, S4, d5, S5, b4, ext5;
 
   Print("====================================================================\n");
   Print("BRANCH AND DEPTH AUDIT OF EXTREME MAXIMAL-CLASS GROUPS (p = 3, 5, 7)\n");
@@ -129,10 +129,15 @@ RunBranchDepthAudit := function()
   S4 := Filtered(MaxClassChildren(G3, 3), IsMcCapable);
   Print("3^4 capable groups: ", Length(S4), "\n");
   d5 := MaxClassChildren(S4[1], 4);
-  ext5 := Filtered(d5, H -> HasTiltedExtremeStabilizer(H, 3));
-  Print("3^5: ", Length(d5), " groups, ", Length(ext5), " extreme, of which capable: ",
-        Number(ext5, IsMcCapable), "\n");
-  if Length(S4) <> 1 or Length(d5) <> 6 or Length(ext5) <> 3 or Number(ext5, IsMcCapable) <> 0 then
+  S5 := Filtered(d5, H -> P1Abelian(H) and IsMcCapable(H));
+  b4 := Filtered(d5, H -> not (P1Abelian(H) and IsMcCapable(H)));
+  ext5 := Filtered(b4, H -> HasTiltedExtremeStabilizer(H, 3));
+  Print("3^5: ", Length(d5), " groups (", Length(S5), " mainline S_5, ",
+        Length(b4), " in branch B_4; ", Number(b4, IsMcCapable), " capable in B_4), ",
+        Length(ext5), " extreme, of which capable: ", Number(ext5, IsMcCapable), "\n");
+  if Length(S4) <> 1 or Length(d5) <> 6 or Length(S5) <> 1 or Length(b4) <> 5
+     or Number(b4, IsMcCapable) <> 0 or Number(S5, H -> HasTiltedExtremeStabilizer(H, 3)) <> 0
+     or Length(ext5) <> 3 or Number(ext5, IsMcCapable) <> 0 then
     Error("Branch B_4 audit mismatch for p = 3!");
   fi;
   PrintTimingIfEnabled();

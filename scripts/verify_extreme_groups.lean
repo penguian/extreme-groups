@@ -232,15 +232,15 @@ theorem witt_jacobi (a b c : Int) :
 @[simp] def wittDen (k : Int) : Int :=
   -(k - 2) * (2 * k - 3) * (2 * k - 5) * (k - 1)
 
-/-- Top-weight Wilson-theorem residue exact polynomial factorization over `Z[k, λ]`:
-    at `k = (p + 1) / 2` (so `p = 2 * k - 1`, weight `2 * k + 1 = p + 2`), after cancelling
-    `2 * k - 1 = p` and applying Wilson's theorem `(p - 1)! ≡ -1 (mod p)` and
-    `[((p - 1) / 2)!]^2 ≡ (-1)^k (mod p)`, the numerator and denominator of
-    `R_{k,3} = L_{k,3} * μ_k^Witt` are `wittNum k` and `wittDen k`. Over `Z[k, λ]`:
+/-- Cleared-denominator polynomial identity over `Z[k, λ]` backing the top-weight
+    Witt-pole residue proof:
       `(wittNum k - 5 * wittDen k) * λ^2 = (2 * k - 1) * (10 * k^3 - 65 * k^2 + 151 * k - 132) * λ^2`.
-    Hence `wittNum k * λ^2 ≡ 5 * wittDen k * λ^2 (mod 2k - 1)` for every integer `k`,
-    forcing `R_{k,3} ≡ 5 * λ^2 (mod p)` and `Jac(p-3, 3, 2) ≡ -5 * λ^2 (mod p)` for every
-    prime `p = 2 * k - 1 >= 11`. -/
+    Hence `wittNum k * λ^2 ≡ 5 * wittDen k * λ^2 (mod 2k - 1)` for every integer `k`.
+    Combining this Lean polynomial certificate with the general-`(j, k)` rational reductions
+    for `\hat L_j`, `L_{k,3}`, and `μ_k^Witt` (checked in `verify_jacobi_witt_factorizations.py`)
+    and with Wilson's theorem `(p - 1)! ≡ -1 (mod p)` and `gcd(wittDen k, p) = 1` at
+    `p = 2k - 1 >= 11` yields `R_{k,3} ≡ 5 * λ^2 (mod p)` and
+    `Jac(p-3, 3, 2) ≡ -5 * λ^2 (mod p)`. -/
 theorem witt_top_weight_residue_certificate (k lam : Int) :
     (wittNum k - 5 * wittDen k) * lam ^ 2 =
       (2 * k - 1) * (10 * k ^ 3 - 65 * k ^ 2 + 151 * k - 132) * lam ^ 2 := by
@@ -516,16 +516,16 @@ theorem cutoff_p7_m11_step1 (μ : Nat → Int) :
   grind (splits := 0)
 
 /-- Order-`7^11` cutoff Step 2, Branch 1 (`μ_3 = λ, μ_4 = λ`):
-    `Jac(5, 4, 2) + (2 * λ - μ_3 - μ_4) * (c_{8,3} + λ) = 2 * λ^2`. -/
+    `Jac(5, 4, 2) - (2 * λ - μ_3 - μ_4) * (c_{8,3} + λ) = 2 * λ^2`. -/
 theorem cutoff_p7_m11_step2_branch1 (μ : Nat → Int) (h3 : μ 3 = μ 2) (h4 : μ 4 = μ 2) :
-    jacobi μ 5 4 2 + (2 * μ 2 - μ 3 - μ 4) * (cCoeff μ 8 3 + μ 2) = 2 * (μ 2) ^ 2 := by
+    jacobi μ 5 4 2 - (2 * μ 2 - μ 3 - μ 4) * (cCoeff μ 8 3 + μ 2) = 2 * (μ 2) ^ 2 := by
   simp only [jacobi, cCoeff, cDiag, Nat.reduceSub, Nat.reduceAdd]
   grind (splits := 0)
 
 /-- Order-`7^11` cutoff Step 2, Branch 2 (`μ_3 = -λ, μ_4 = 3 * λ`):
-    `Jac(5, 4, 2) + (2 * λ - μ_3 - μ_4) * (c_{8,3} + λ) = 66 * λ^2 ≡ 3 * λ^2 (mod 7)`. -/
+    `Jac(5, 4, 2) - (2 * λ - μ_3 - μ_4) * (c_{8,3} + λ) = 66 * λ^2 ≡ 3 * λ^2 (mod 7)`. -/
 theorem cutoff_p7_m11_step2_branch2 (μ : Nat → Int) (h3 : μ 3 = -μ 2) (h4 : μ 4 = 3 * μ 2) :
-    jacobi μ 5 4 2 + (2 * μ 2 - μ 3 - μ 4) * (cCoeff μ 8 3 + μ 2) = 66 * (μ 2) ^ 2 := by
+    jacobi μ 5 4 2 - (2 * μ 2 - μ 3 - μ 4) * (cCoeff μ 8 3 + μ 2) = 66 * (μ 2) ^ 2 := by
   simp only [jacobi, cCoeff, cDiag, Nat.reduceSub, Nat.reduceAdd]
   grind (splits := 0)
 
